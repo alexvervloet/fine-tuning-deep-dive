@@ -1,0 +1,17 @@
+# The default PROVIDER=mock needs only python-dotenv — the whole repo (build a
+# dataset, validate it, run a simulated fine-tune, prove it beat the baseline)
+# runs offline on the standard library. The provider SDKs are only needed for the
+# real (paid) OpenAI fine-tune or to use a hosted base/teacher model.
+
+# Loads variables from a .env file (like PROVIDER, OPENAI_API_KEY) into the env.
+python-dotenv>=1.0.0
+
+# --- Provider SDKs (optional; only for the real, non-mock stacks) ---
+# You only need the one matching your PROVIDER (see .env). Both are light.
+
+# OpenAI — used when PROVIDER=openai (chat + the fine-tuning API). Needed for the
+# real, opt-in, PAID fine-tune path.
+openai>=1.30.0
+
+# Anthropic — used when PROVIDER=claude (chat only; no self-serve fine-tuning).
+anthropic>=0.111.0
