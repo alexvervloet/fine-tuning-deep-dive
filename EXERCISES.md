@@ -236,6 +236,24 @@ source of pairs is your own 👍/👎 traffic (the Production feedback flywheel)
 
 ---
 
+## Section 12 — Reinforcement fine-tuning (RFT) **(offline, conceptual)**
+
+**Recall.** SFT learns from demonstrations and preference tuning from comparisons.
+What does RFT learn from, and when does that beat writing labeled answers or pairs?
+
+<details><summary>▸ Answer</summary>
+
+RFT learns from a **grader** — a function that *scores* an attempt (unit tests pass,
+JSON validates, math answer matches, or a rubric judge rates it). There's no target
+answer and no pair. It beats labeled data when success is easy to **verify** but hard
+to **demonstrate** — many correct outputs exist, so you can check one but can't
+enumerate them (it's how reasoning models are trained). The risk unique to it: the
+model **hacks a weak grader**, passing the check while missing the intent — so the
+grader needs the same scrutiny as an eval, and you still gate on a held-out set.
+</details>
+
+---
+
 ## Capstone — `finetune_run.py`
 
 **Do.** Run `python hands_on/finetune_run.py`. It chains validate → tune →
