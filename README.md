@@ -280,6 +280,38 @@ eval before shipping.
 
 ---
 
+## 12. Reinforcement fine-tuning (RFT) — learning from a grader
+
+SFT learns from **demonstrations** (one right answer to imitate). Preference tuning
+learns from **comparisons** (A is better than B). **Reinforcement fine-tuning** learns
+from a **grader**: the model generates an answer, a scoring function rates it, and
+training pushes the model toward higher-scoring answers. There's no labeled target and
+no pair — just a way to *score* an attempt. This section is conceptual (no runnable
+example): graders are expensive and fiddly, and it's the most complex rung here.
+
+The whole game is the grader — a function `score(prompt, answer) -> number`. It can be
+a hard programmatic check (do the unit tests pass? does the JSON validate against the
+schema? does the math answer match?) or a model-as-judge scoring against a rubric. This
+is the "reinforcement learning from *verifiable* rewards" that trains modern reasoning
+models: when correctness is *checkable* but you can't write down THE one right output,
+a grader beats labeled data.
+
+**When a grader beats labeled pairs** — reach for RFT when (a) success is easy to
+*verify* but hard to *demonstrate* (there are many correct programs, proofs, or plans,
+so you can check one but not enumerate them), (b) writing thousands of gold answers or
+preference pairs is more expensive than writing one scoring function, or (c) you're
+optimizing a multi-step behavior where only the *outcome* is gradeable. Stick with SFT
+when you *can* cheaply demonstrate the target, and preference tuning when quality is a
+matter of taste a judge can rank but not score objectively.
+
+The catch, beyond cost: a model optimizing a score will **hack** a weak grader — pass
+the letter of the check while missing the point (the eval-gaming failure the
+[Evals dive](https://github.com/Ailuue/evals-deep-dive) warns about, now inside the
+training loop). So the grader itself needs the same scrutiny as an eval, and the
+shipping discipline is unchanged: gate on a held-out set the grader never saw.
+
+---
+
 ## The capstone: `finetune_run.py`
 
 Everything assembled into one command that does the real workflow:
@@ -339,6 +371,8 @@ same idea, with more control:
 
 - **Preference tuning (DPO/RLHF)** — covered conceptually in §11 above; train on *comparisons* ("A is better than B"),
   not just demonstrations, to shape subtler behavior.
+- **Reinforcement fine-tuning (RFT)** — covered conceptually in §12 above; train against a *grader* (a verifiable
+  check or a rubric judge) when success is checkable but not easily demonstrated — how reasoning models are trained.
 - **Open-weight LoRA in practice** — actually run Section 10 on a GPU with
   `transformers`/`peft`/`trl`; pairs with the Local Models deep dive.
 - **Bigger, cleaner datasets** — the real lever is almost always *more and better
@@ -449,6 +483,8 @@ any order; this sequence builds naturally:
 - [Fine-tuning](https://github.com/Ailuue/fine-tuning-deep-dive) — teach a model new behavior by example
 - [MCP](https://github.com/Ailuue/mcp-deep-dive) — serve tools, data & prompts to any LLM over a standard protocol
 - [Local Models](https://github.com/Ailuue/local-models-deep-dive) — run open-weight models on your own machine
+- [Agent Harnesses](https://github.com/Ailuue/agent-harness-deep-dive) — build on the loop: hooks, permissions, sandboxing, subagents
+- [Realtime Voice](https://github.com/Ailuue/realtime-voice-deep-dive) — low-latency speech-to-speech agents
 
 **Fine-tuning is a bonus dive in the series.** It slots most naturally after
 [RAG](https://github.com/Ailuue/rag-deep-dive) (#4) — whose "RAG, fine-tuning, or
