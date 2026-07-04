@@ -8,9 +8,11 @@ model — no special API. This script tunes on the mock (fast and free), then as
 both the BASE model and the FINE-TUNED model the same questions, side by side, so
 you can SEE the behavior change.
 
-Watch what changes: the base model rambles and ignores the house format; the
-fine-tuned model answers in the trained 'category: ... | reply: ...' shape. That's
-the whole idea — fine-tuning changed HOW it behaves, taught only by examples.
+Watch what changes: the base model handles the one or two categories it happens to
+know (the password one) but rambles and ignores the house format on the rest; the
+fine-tuned model answers EVERY one in the trained 'category: ... | reply: ...'
+shape. That's the whole idea — fine-tuning changed HOW it behaves, taught only by
+examples.
 
     python examples/05_use_model.py
 
@@ -33,9 +35,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TRAIN = os.path.join(ROOT, "datasets", "support_train.jsonl")
 
 QUESTIONS = [
-    "I can't sign in, I think I forgot my password",
-    "can you refund my last invoice?",
-    "the app keeps crashing when I open it",
+    "I can't sign in, I think I forgot my password",  # a category the base knows -> it formats this one
+    "the app keeps crashing when I open it",           # the base rambles; the tuned model gets it
+    "how do I turn on two-factor login?",              # a paraphrase the base fumbles, the tuned model nails
 ]
 
 
