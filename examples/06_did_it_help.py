@@ -84,9 +84,10 @@ def main() -> int:
         print("VERDICT: no improvement over baseline -> do NOT ship it. "
               "Fix the dataset and try again.")
     print(
-        "\nThat verdict is the whole point. 'It looks better' ships regressions; "
-        "'+18% accuracy and 80% win-rate on the held-out set' is a decision you can "
-        "defend. Same method as the evals dive — only the thing compared changed."
+        f"\nThat verdict is the whole point. 'It looks better' ships regressions; a "
+        f"concrete '{delta:+.0%} accuracy, {wins['B'] / n:.0%} win-rate on the held-out "
+        f"set' is a result you can defend. Same method as the evals dive — only the "
+        f"thing compared changed."
     )
     return 0
 
