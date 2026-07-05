@@ -130,8 +130,8 @@ def ensure_ready(*, for_tuning: bool = False) -> None:
     missing = [k for k in required_keys() if not os.getenv(k)]
     if missing:
         sys.exit(
-            f"PROVIDER={p} needs {', '.join(missing)} in .env. "
-            f"See .env.example, or run `python check_setup.py`. "
+            f"PROVIDER={p} needs {', '.join(missing)} in the environment. "
+            f"Provide them via secrun (see SECRETS.md), or run `secrun python check_setup.py`. "
             f"(Tip: PROVIDER=mock needs no key and runs everything offline.)"
         )
     if for_tuning and not can_tune():
@@ -154,14 +154,16 @@ def ensure_ready(*, for_tuning: bool = False) -> None:
 # the mock tuner (see apply_mock_finetune below); a base call uses the weaker
 # default behavior, so fine-tuning visibly *changes how it behaves*.
 
-# The base model's behavior: it knows a couple of categories but is sloppy about
-# format (it rambles instead of answering in the house style). Fine-tuning will
-# fix the format and add the categories it's missing.
+# The base model's behavior: it handles the two most common categories it happens
+# to know (password -> account, refund -> billing) in roughly the house format, but
+# it rambles on everything else — no category, wrong shape. So it scores a low-but-
+# nonzero baseline (a real base model isn't literally 0%; it's just worse). Fine-
+# tuning fixes the format everywhere and adds the categories the base is missing.
 _MOCK_BASE_RULES = {
-    "password": "You can probably reset your password somewhere in the settings, I think.",
-    "refund": "Refunds might be possible, you'd have to check the billing page maybe.",
+    "password": "category: account | reply: You can reset your password in Settings > Security.",
+    "refund": "category: billing | reply: Refunds are available from the billing page within 30 days.",
 }
-_MOCK_BASE_FALLBACK = "Hmm, I'm not totally sure about that one, sorry!"
+_MOCK_BASE_FALLBACK = "Hmm, I'm not totally sure about that one — you could try poking around the settings?"
 
 # A fine-tuned model is just the base model plus a learned behavior table that the
 # mock tuner derives from the training data. Set by apply_mock_finetune().
