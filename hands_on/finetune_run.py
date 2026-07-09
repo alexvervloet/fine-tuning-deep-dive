@@ -25,7 +25,7 @@ get a cost warning and a confirmation prompt).
     python hands_on/finetune_run.py --min-winrate 0.6
 
     # The real, PAID path (opt-in, confirmed):
-    PROVIDER=openai python hands_on/finetune_run.py --real
+    PROVIDER=openai secrun python hands_on/finetune_run.py --real
 """
 
 import argparse
