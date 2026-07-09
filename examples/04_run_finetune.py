@@ -20,7 +20,7 @@ It runs TWO ways, and the code is nearly identical for both — that's the point
     and costs real money. It prints a cost warning and makes you confirm first.
 
     python examples/04_run_finetune.py            # mock, offline, free
-    PROVIDER=openai python examples/04_run_finetune.py --real   # PAID, opt-in
+    PROVIDER=openai secrun python examples/04_run_finetune.py --real   # PAID, opt-in
 
 After a successful run it prints the fine-tuned model id. Save it — Sections 6
 and 7 use it to generate from, and to prove it beat the base model.
