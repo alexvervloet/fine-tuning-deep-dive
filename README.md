@@ -14,9 +14,9 @@ ships a tiny deterministic "model" and a **simulated fine-tune lifecycle**
 one env var and the exact same code runs a real, paid OpenAI fine-tune.
 
 This repo is **standalone**: it teaches everything it needs on its own. It is the
-hands-on version of the [RAG deep dive](https://github.com/Ailuue/rag-deep-dive)'s
+hands-on version of the [RAG deep dive](https://github.com/alexvervloet/rag-deep-dive)'s
 "RAG, fine-tuning, or something else?" section, and Section 7 borrows the win-rate
-method from the [Evals deep dive](https://github.com/Ailuue/evals-deep-dive) — but
+method from the [Evals deep dive](https://github.com/alexvervloet/evals-deep-dive) — but
 its code depends on neither.
 
 Like its siblings, it's meant to be *walked through*. Each section ends with
@@ -52,8 +52,10 @@ source .venv/bin/activate          # Windows: .venv\Scripts\activate
 # 2. Install dependencies (the default mock stack needs only python-dotenv)
 pip install -r requirements.txt
 
-# 3. Copy the env file — you do NOT need to add a key
+# 3. Copy the env file — the default runs keyless (no API key needed)
 cp .env.example .env
+#    (Real provider instead of the mock? Its key goes in your OS keychain,
+#     not .env — see ../SECRETS.md — then run scripts as `secrun python ...`.)
 
 # 4. Confirm everything is wired up (makes no API call, costs nothing)
 python check_setup.py
@@ -175,8 +177,9 @@ python examples/05_use_model.py
 Once a job succeeds, the provider hosts your model under a new id (e.g.
 `ft:gpt-4o-mini:...`). Using it is just a normal chat call with that id — there's
 no special API. The example asks the **base** and the **fine-tuned** model the same
-questions side by side: the base rambles and ignores the house format; the tuned
-model snaps into the trained `category: ... | reply: ...` shape. That behavior
+questions side by side: the base handles the one or two categories it happens to
+know but rambles and ignores the house format on the rest; the tuned model snaps
+every one into the trained `category: ... | reply: ...` shape. That behavior
 change — taught only by examples — is the whole idea.
 
 ---
@@ -189,7 +192,7 @@ python examples/06_did_it_help.py
 
 **The punchline.** A fine-tune you *think* is better is worth nothing; the only
 thing worth shipping is one you can *prove* beat your baseline on data the training
-never saw. This points the [Evals deep dive](https://github.com/Ailuue/evals-deep-dive)'s
+never saw. This points the [Evals deep dive](https://github.com/alexvervloet/evals-deep-dive)'s
 method at one decision — base vs. fine-tuned on the held-out
 [`datasets/support_eval.jsonl`](datasets/support_eval.jsonl) — with two numbers:
 
@@ -257,7 +260,7 @@ weights needs a GPU and a different stack (PyTorch + Hugging Face
 (**full fine-tuning vs. LoRA/PEFT**) and shows that **your dataset is the same
 asset either way**: the file you built in Sections 3–4 is exactly what an
 open-weight trainer consumes. To actually *run* open weights locally, see the
-**[Local Models deep dive](https://github.com/Ailuue/local-models-deep-dive)**.
+**[Local Models deep dive](https://github.com/alexvervloet/local-models-deep-dive)**.
 
 ---
 
@@ -306,7 +309,7 @@ matter of taste a judge can rank but not score objectively.
 
 The catch, beyond cost: a model optimizing a score will **hack** a weak grader — pass
 the letter of the check while missing the point (the eval-gaming failure the
-[Evals dive](https://github.com/Ailuue/evals-deep-dive) warns about, now inside the
+[Evals dive](https://github.com/alexvervloet/evals-deep-dive) warns about, now inside the
 training loop). So the grader itself needs the same scrutiny as an eval, and the
 shipping discipline is unchanged: gate on a held-out set the grader never saw.
 
@@ -331,7 +334,7 @@ python hands_on/finetune_run.py --train datasets/support_distilled.jsonl
 python hands_on/finetune_run.py --min-winrate 0.6
 
 # The real, PAID path (opt-in, confirmed):
-PROVIDER=openai python hands_on/finetune_run.py --real
+PROVIDER=openai secrun python hands_on/finetune_run.py --real
 ```
 
 The gate is the discipline the whole repo is about: a fine-tune ships only when it
@@ -400,7 +403,7 @@ replace once a fine-tuned model is on a live request path:
 
 The general ops machinery — observability, cost, reliability, caching, guardrails,
 prompt versioning, eval gates — is built from scratch and wired into one running
-app in **[Production](https://github.com/Ailuue/ai-in-production-deep-dive)** (#8 in
+app in **[Production](https://github.com/alexvervloet/ai-in-production-deep-dive)** (#8 in
 the series), which also runs offline on a mock provider.
 
 ---
@@ -461,33 +464,34 @@ whole "fine-tune lifecycle" in one readable file.
 
 ## The series
 
-This is one of thirteen standalone, hands-on deep dives into building with LLM APIs — eight core, plus five bonus dives.
+This is one of sixteen standalone, hands-on deep dives into building with LLM APIs — eight core, plus eight bonus dives.
 Each one stands on its own — its own setup, examples, and capstone — and they all
 share the same house style: provider-agnostic where it makes sense, built from
 scratch (no frameworks), offline-first examples, and a real capstone. Do them in
 any order; this sequence builds naturally:
 
-1. [OpenAI API](https://github.com/Ailuue/openai-api-deep-dive) — the API from zero
-2. [Claude API](https://github.com/Ailuue/claude-api-deep-dive) — the same ideas, the Anthropic way
-3. [Prompt Engineering](https://github.com/Ailuue/prompt-engineering-deep-dive) — shape model behavior with better prompts
-4. [RAG](https://github.com/Ailuue/rag-deep-dive) — answer questions over your own documents
-5. [Evals](https://github.com/Ailuue/evals-deep-dive) — measure whether a change actually helps
-6. [Agents](https://github.com/Ailuue/agents-deep-dive) — give a model tools and a loop so it can act
-7. [Prompt Injection & Guardrails](https://github.com/Ailuue/prompt-injection-deep-dive) — attack and defend all of the above
-8. [Production](https://github.com/Ailuue/ai-in-production-deep-dive) — operate one app end to end
+1. [OpenAI API](https://github.com/alexvervloet/openai-api-deep-dive) — the API from zero
+2. [Claude API](https://github.com/alexvervloet/claude-api-deep-dive) — the same ideas, the Anthropic way
+3. [Prompt Engineering](https://github.com/alexvervloet/prompt-engineering-deep-dive) — shape model behavior with better prompts
+4. [RAG](https://github.com/alexvervloet/rag-deep-dive) — answer questions over your own documents
+5. [Evals](https://github.com/alexvervloet/evals-deep-dive) — measure whether a change actually helps
+6. [Agents](https://github.com/alexvervloet/agents-deep-dive) — give a model tools and a loop so it can act
+7. [Prompt Injection & Guardrails](https://github.com/alexvervloet/prompt-injection-deep-dive) — attack and defend all of the above
+8. [Production](https://github.com/alexvervloet/ai-in-production-deep-dive) — operate one app end to end
 
 **Bonus dives** — standalone, slotting in where they're most useful:
 
-- [Context Engineering](https://github.com/Ailuue/context-engineering-deep-dive) — manage what's in the window: memory, compaction, assembly
-- [Multimodal](https://github.com/Ailuue/multimodal-deep-dive) — images & audio, not just text
-- [Fine-tuning](https://github.com/Ailuue/fine-tuning-deep-dive) — teach a model new behavior by example
-- [MCP](https://github.com/Ailuue/mcp-deep-dive) — serve tools, data & prompts to any LLM over a standard protocol
-- [Local Models](https://github.com/Ailuue/local-models-deep-dive) — run open-weight models on your own machine
-- [Agent Harnesses](https://github.com/Ailuue/agent-harness-deep-dive) — build on the loop: hooks, permissions, sandboxing, subagents
-- [Realtime Voice](https://github.com/Ailuue/realtime-voice-deep-dive) — low-latency speech-to-speech agents
+- [Context Engineering](https://github.com/alexvervloet/context-engineering-deep-dive) — manage what's in the window: memory, compaction, assembly
+- [Multimodal](https://github.com/alexvervloet/multimodal-deep-dive) — images & audio, not just text
+- [Fine-tuning](https://github.com/alexvervloet/fine-tuning-deep-dive) — teach a model new behavior by example
+- [MCP](https://github.com/alexvervloet/mcp-deep-dive) — serve tools, data & prompts to any LLM over a standard protocol
+- [Local Models](https://github.com/alexvervloet/local-models-deep-dive) — run open-weight models on your own machine
+- [Agent Harnesses](https://github.com/alexvervloet/agent-harness-deep-dive) — build on the loop: hooks, permissions, sandboxing, subagents
+- [Realtime Voice](https://github.com/alexvervloet/realtime-voice-deep-dive) — low-latency speech-to-speech agents
+- [Observability](https://github.com/alexvervloet/observability-deep-dive) — watch a running app over time: drift, quality, alerting, the flywheel
 
 **Fine-tuning is a bonus dive in the series.** It slots most naturally after
-[RAG](https://github.com/Ailuue/rag-deep-dive) (#4) — whose "RAG, fine-tuning, or
+[RAG](https://github.com/alexvervloet/rag-deep-dive) (#4) — whose "RAG, fine-tuning, or
 something else?" decision this repo makes hands-on — and leans on
-[Evals](https://github.com/Ailuue/evals-deep-dive) (#5) to prove a tune actually
+[Evals](https://github.com/alexvervloet/evals-deep-dive) (#5) to prove a tune actually
 helped.
