@@ -18,7 +18,7 @@ at a strong model like gpt-4o or claude). It then validates the result so you ca
 see it's a normal training file — ready to feed into Section 5's tune step.
 
     python examples/08_distillation.py
-    PROVIDER=openai python examples/08_distillation.py   # teacher = a real model
+    PROVIDER=openai secrun python examples/08_distillation.py   # teacher = a real model
 """
 
 import os
