@@ -1,22 +1,22 @@
-# Exercises — make the learning stick
+# Exercises: make the learning stick
 
 Reading code teaches you less than *predicting* what it will do and then checking.
 This file turns each section of the [README](README.md) into a few quick
 active-recall prompts.
 
 How to use it: work the section first, then come back. **Commit to an answer
-before you run or reveal** — the prediction is where the learning happens. Answers
+before you run or reveal.** The prediction is where the learning happens. Answers
 are hidden behind ▸ toggles.
 
-> **Every section here runs offline and free** on the default `PROVIDER=mock` —
+> **Every section here runs offline and free** on the default `PROVIDER=mock` 
 > including the simulated fine-tune. Nothing in these exercises costs a cent.
 
 ---
 
-## Section 2 — When to fine-tune **(offline)**
+## Section 2: When to fine-tune **(offline)**
 
 **Recall.** Three tools change three different things about a model's answer. Match
-each — RAG/long context, fine-tuning, tools/agents — to *what it changes*.
+each (RAG/long context, fine-tuning, tools/agents) to *what it changes*.
 
 <details><summary>▸ Answer</summary>
 
@@ -34,7 +34,7 @@ tool does it land on, and why *not* fine-tuning?
 
 <details><summary>▸ Answer</summary>
 
-**RAG**, not fine-tuning. The pricing *changes* and must be *cited* — that's
+**RAG**, not fine-tuning. The pricing *changes* and must be *cited*, and that's
 knowledge, and baking it into weights would be stale the moment prices change (and
 can't cite a source). Fine-tuning is for behavior that stays the same, not facts
 that move.
@@ -42,14 +42,14 @@ that move.
 
 ---
 
-## Section 3 — The dataset is the product **(offline)**
+## Section 3: The dataset is the product **(offline)**
 
 **Recall.** What exact format does a hosted fine-tune expect, and which turn does
 each training example *end* on?
 
 <details><summary>▸ Answer</summary>
 
-**JSON Lines (JSONL)** — one conversation per line, each a `{"messages": [...]}`
+**JSON Lines (JSONL)**: one conversation per line, each a `{"messages": [...]}`
 object. Each example ends on the **assistant** turn: that's the behavior the model
 is being taught to reproduce. The system+user turns are the setup; the assistant
 turn is the lesson.
@@ -62,13 +62,13 @@ and *validation* instead of training on all of it?
 
 So you have data the model **didn't train on** to measure against (Section 7). If
 you evaluate on the training rows, a model that simply memorized them looks
-perfect while generalizing terribly — the validation/held-out split is the only
+perfect while generalizing terribly; the validation/held-out split is the only
 thing that catches overfitting.
 </details>
 
 ---
 
-## Section 4 — Validate before you train **(offline)**
+## Section 4: Validate before you train **(offline)**
 
 **Predict, then run.** Before running `examples/03_validate_data.py`: name two
 problems an offline check can catch *before* you spend a cent training.
@@ -84,14 +84,14 @@ expected. The script runs all of these on the good set and then on a deliberatel
 
 ---
 
-## Section 5 — Run a fine-tune job
+## Section 5: Run a fine-tune job
 
 **Recall.** List the four steps of the hosted fine-tune lifecycle in order.
 
 <details><summary>▸ Answer</summary>
 
 1. **upload** the training file (`files.create`)
-2. **create** a job from it (`fine_tuning.jobs.create`) — this is what trains
+2. **create** a job from it (`fine_tuning.jobs.create`), which is what trains
 3. **poll** the job until done (`fine_tuning.jobs.retrieve`)
 4. **use** the returned model id
 
@@ -104,21 +104,21 @@ identical code to the real OpenAI path.
 
 <details><summary>▸ Answer</summary>
 
-It does **not** start a paid job — the real path is opt-in behind `--real` plus a
+It does **not** start a paid job. The real path is opt-in behind `--real` plus a
 confirmation, precisely because a fine-tune costs real money and takes real time.
 You have to *mean* it. Without `--real` it runs the safe simulated path.
 </details>
 
 ---
 
-## Section 6 — Use the fine-tuned model
+## Section 6: Use the fine-tuned model
 
 **Recall.** After a job succeeds, what's different about *calling* the fine-tuned
 model versus the base model?
 
 <details><summary>▸ Answer</summary>
 
-Almost nothing — it's a normal chat call; you just pass the **new model id** (e.g.
+Almost nothing. It's a normal chat call; you just pass the **new model id** (e.g.
 `ft:gpt-4o-mini:...`) instead of the base id. There's no special "use a fine-tune"
 endpoint. The behavior change lives in the weights, not the API shape.
 </details>
@@ -129,21 +129,21 @@ questions. What concretely changed, and what did *not*?
 <details><summary>▸ Answer</summary>
 
 **Changed:** the tuned model now answers in the rigid `category: ... | reply: ...`
-house format the training demonstrated — reliably, with no reminder in the prompt.
+house format the training demonstrated, reliably, with no reminder in the prompt.
 **Did not change:** its underlying knowledge. Fine-tuning taught a *format/behavior*,
 not new facts.
 </details>
 
 ---
 
-## Section 7 — Did it actually help?
+## Section 7: Did it actually help?
 
 **Recall.** Why is a held-out set non-negotiable when measuring a fine-tune?
 
 <details><summary>▸ Answer</summary>
 
 Because a model can score perfectly on rows it *trained on* simply by memorizing
-them — that number is meaningless. Only data the training never saw
+them, that number is meaningless. Only data the training never saw
 (`datasets/support_eval.jsonl`) tells you whether the behavior **generalizes**. No
 held-out score, no claim.
 </details>
@@ -155,21 +155,21 @@ move?
 <details><summary>▸ Answer</summary>
 
 **Don't ship it.** A fine-tune that doesn't beat the baseline is a regression, no
-matter how much effort went in. Go back to the dataset — more, cleaner, better-
-balanced examples — and re-measure. "We already trained it" is the sunk-cost
+matter how much effort went in. Go back to the dataset (more, cleaner, better-
+balanced examples) and re-measure. "We already trained it" is the sunk-cost
 trap.
 </details>
 
 ---
 
-## Section 8 — Hyperparameters **(offline)**
+## Section 8: Hyperparameters **(offline)**
 
 **Recall.** What does the *training loss falling while validation loss rises* tell
 you, and which knob do you turn?
 
 <details><summary>▸ Answer</summary>
 
-**Overfitting** — the model is memorizing the training set instead of learning the
+**Overfitting**: the model is memorizing the training set instead of learning the
 general behavior. The first knob to turn down is **n_epochs** (fewer passes over
 the data); more/cleaner data helps too. `examples/07_hyperparameters.py` draws this
 exact divergence in the simulated loss curve.
@@ -177,7 +177,7 @@ exact divergence in the simulated loss curve.
 
 ---
 
-## Section 9 — Distillation **(offline)**
+## Section 9: Distillation **(offline)**
 
 **Recall.** In distillation, who is the *teacher*, who is the *student*, and why is
 the dataset so cheap to build?
@@ -186,24 +186,24 @@ the dataset so cheap to build?
 
 The **teacher** is a big, strong, expensive model that already does the task; the
 **student** is a small, cheap, fast model you fine-tune to imitate it. The dataset
-is cheap because **the labels write themselves** — you run the teacher over your
+is cheap because **the labels write themselves**: you run the teacher over your
 inputs and use its outputs as the assistant turns. No hand-labeling.
 </details>
 
 **Do.** Run `examples/08_distillation.py`. After it builds the distilled set, what
-can you immediately do with the file — and which earlier section does that prove
+can you immediately do with the file, and which earlier section does that prove
 the point of?
 
 <details><summary>▸ Answer</summary>
 
-Feed it straight into the Section 5 tune step — it's a normal training file. The
+Feed it straight into the Section 5 tune step; it's a normal training file. The
 example **validates** it (Section 4) to prove exactly that: a distillation set is
 just a training set whose labels came from a model instead of a human.
 </details>
 
 ---
 
-## Section 10 — Open weights & LoRA **(offline, conceptual)**
+## Section 10: Open weights & LoRA **(offline, conceptual)**
 
 **Recall.** What's the difference between *full* fine-tuning and *LoRA/PEFT*, and
 what stays identical between hosted and open-weight training?
@@ -212,14 +212,14 @@ what stays identical between hosted and open-weight training?
 
 **Full** fine-tuning updates *all* the model's weights (heavy: lots of GPU memory).
 **LoRA/PEFT** freezes the base weights and trains a small number of *added* weights
-— far cheaper, almost as good for most tasks. What's identical either way: **your
+and it's far cheaper, almost as good for most tasks. What's identical either way: **your
 dataset**. The JSONL you built in Sections 3–4 is exactly what an open-weight
 trainer consumes too.
 </details>
 
 ---
 
-## Section 11 — Preference tuning (DPO/RLHF) **(offline, conceptual)**
+## Section 11: Preference tuning (DPO/RLHF) **(offline, conceptual)**
 
 **Recall.** SFT (every earlier section) trains on the one right answer. When would
 you reach for preference tuning instead, and how is its training data shaped
@@ -228,7 +228,7 @@ differently?
 <details><summary>▸ Answer</summary>
 
 Reach for it when there's **no single correct output** but you can still say which of
-two is better — tone, conciseness, helpfulness, how firmly to refuse. Its data isn't
+two is better: tone, conciseness, helpfulness, how firmly to refuse. Its data isn't
 `{prompt → ideal answer}`; it's `{prompt, chosen, rejected}` pairs. DPO nudges the
 model to make the *chosen* response more likely than the *rejected* one. The cheapest
 source of pairs is your own 👍/👎 traffic (the Production feedback flywheel).
@@ -236,25 +236,25 @@ source of pairs is your own 👍/👎 traffic (the Production feedback flywheel)
 
 ---
 
-## Section 12 — Reinforcement fine-tuning (RFT) **(offline, conceptual)**
+## Section 12: Reinforcement fine-tuning (RFT) **(offline, conceptual)**
 
 **Recall.** SFT learns from demonstrations and preference tuning from comparisons.
 What does RFT learn from, and when does that beat writing labeled answers or pairs?
 
 <details><summary>▸ Answer</summary>
 
-RFT learns from a **grader** — a function that *scores* an attempt (unit tests pass,
+RFT learns from a **grader**: a function that *scores* an attempt (unit tests pass,
 JSON validates, math answer matches, or a rubric judge rates it). There's no target
 answer and no pair. It beats labeled data when success is easy to **verify** but hard
-to **demonstrate** — many correct outputs exist, so you can check one but can't
+to **demonstrate**: many correct outputs exist, so you can check one but can't
 enumerate them (it's how reasoning models are trained). The risk unique to it: the
-model **hacks a weak grader**, passing the check while missing the intent — so the
+model **hacks a weak grader**, passing the check while missing the intent, so the
 grader needs the same scrutiny as an eval, and you still gate on a held-out set.
 </details>
 
 ---
 
-## Capstone — `finetune_run.py`
+## Capstone: `finetune_run.py`
 
 **Do.** Run `python hands_on/finetune_run.py`. It chains validate → tune →
 eval-gate → ship-if-wins. What is the gate actually deciding, and what does a
@@ -264,7 +264,7 @@ eval-gate → ship-if-wins. What is the gate actually deciding, and what does a
 
 The gate decides whether the tuned model **provably beat the base model** on the
 held-out set (optionally above a `--min-winrate` you set). A non-zero exit means it
-**did not** clear the bar — the same signal a CI eval gate gives, so a bad fine-tune
+**did not** clear the bar, the same signal a CI eval gate gives, so a bad fine-tune
 can't silently ship.
 </details>
 
@@ -278,7 +278,7 @@ idea has clicked.
 
 ### Where to take it next
 
-Pick a tiny behavior you want a model to do *the same way every time* — a fixed
-JSON shape, a house tone, a one-line classification — write 30–50 honest examples,
+Pick a tiny behavior you want a model to do *the same way every time*: a fixed
+JSON shape, a house tone, a one-line classification. Write 30-50 honest examples,
 validate them, tune on the mock, and gate. If it wins on held-out data, you've done
 the entire real workflow; only then is it worth spending money to run it for real.
