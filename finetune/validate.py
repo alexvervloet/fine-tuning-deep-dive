@@ -1,6 +1,5 @@
 """
-finetune/validate.py — check your data BEFORE you pay to train on it.
-====================================================================
+finetune/validate.py: check your data BEFORE you pay to train on it.
 
 A fine-tune job is slow and (on a real provider) costs money. The single
 cheapest way to not waste either is to validate the dataset first. Almost every
@@ -31,7 +30,7 @@ _VALID_ROLES = {"system", "user", "assistant"}
 
 # Rough USD per 1M *training* tokens for OpenAI fine-tuning, by base model.
 # Training cost ~= (tokens per example) x (number of examples) x (epochs).
-# These are illustrative ballparks for teaching the *shape* of the cost — always
+# These are illustrative ballparks for teaching the *shape* of the cost: always
 # check the provider's current pricing page before running a real job.
 _TRAIN_USD_PER_1M = {
     "gpt-4o-mini": 3.00,
@@ -108,7 +107,7 @@ def validate_schema(examples: list[ChatExample]) -> list[str]:
 def check_system_consistency(examples: list[ChatExample]) -> list[str]:
     """Warn if the system prompt isn't consistent across examples.
 
-    Not an error — but if the system prompt drifts, the model can't reliably learn
+    Not an error, but if the system prompt drifts, the model can't reliably learn
     to associate *one* instruction with the behavior you want. Pick the system
     prompt you'll use at inference time and use it in every training example.
     """
@@ -166,7 +165,7 @@ def estimate_cost(examples: list[ChatExample], *, model: str, epochs: int = 3) -
 
     cost ~= total_tokens x epochs x price_per_token. This is the number that
     should make you pause and ask "is this fine-tune worth it, vs. a better
-    prompt?" — which is exactly Section 2's question.
+    prompt?", which is exactly Section 2's question.
     """
     per_1m = _TRAIN_USD_PER_1M.get(model, 0.0)
     total = estimate_tokens(examples) * epochs
@@ -186,21 +185,21 @@ def validate_dataset(
     report.warnings.extend(check_system_consistency(examples))
     report.duplicates = find_duplicates(examples)
     if report.duplicates:
-        report.warnings.append(f"{report.duplicates} duplicate example(s) — dedupe to save tokens")
+        report.warnings.append(f"{report.duplicates} duplicate example(s); dedupe to save tokens")
 
     report.label_counts = class_balance(examples)
     if report.label_counts:
         counts = list(report.label_counts.values())
         if max(counts) > 3 * max(min(counts), 1):
             report.warnings.append(
-                "class imbalance: the largest class is 3x+ the smallest — "
+                "class imbalance: the largest class is 3x+ the smallest. "
                 "the model will over-predict the common class"
             )
 
     # OpenAI requires at least 10 training examples; warn well before that.
     if len(examples) < 10:
         report.warnings.append(
-            f"only {len(examples)} examples — most providers want 10+ to even "
+            f"only {len(examples)} examples; most providers want 10+ to even "
             f"accept the job, and dozens to hundreds to actually learn a behavior"
         )
 

@@ -1,6 +1,5 @@
 """
-finetune/mock_tuner.py — the offline fine-tuning lifecycle, simulated.
-======================================================================
+finetune/mock_tuner.py: the offline fine-tuning lifecycle, simulated.
 
 This is the file that makes the whole repo free. A real fine-tune is: upload a
 file, create a job, poll it from `queued` -> `running` -> `succeeded` (minutes to
@@ -17,13 +16,13 @@ fraction of a second, for $0:
 
 The shape is intentionally identical to the real OpenAI calls wrapped in
 providers.py, so the example scripts read the same whether you run the mock or
-the real thing — only a flag changes.
+the real thing; only a flag changes.
 
 What does the mock actually "learn"? It reads the training file and builds a
 small behavior table: for each example, it maps a keyword from the user turn to
 the assistant reply the data demonstrated. On `succeeded`, it registers that
 table with providers.apply_mock_finetune(), so calling generate(model=<tuned id>)
-now produces the taught behavior. That's a toy of the real thing — but it's
+now produces the taught behavior. That's a toy of the real thing, but it's
 enough to make Section 7 ("did it help?") give a real, measurable win offline:
 the base model rambles, the "fine-tuned" model answers in the trained format.
 
@@ -79,8 +78,8 @@ def _learn_behavior(examples: list[ChatExample]) -> dict[str, str]:
     """Derive the 'fine-tuned' behavior table from the training data.
 
     For each example we take a salient keyword from the user message and map it to
-    the assistant reply. This is a deliberate toy of what training does — a real
-    fine-tune adjusts weights, not a lookup table — but it captures the essential
+    the assistant reply. This is a deliberate toy of what training does (a real
+    fine-tune adjusts weights, not a lookup table) but it captures the essential
     truth we want learners to feel: the model's new behavior comes *entirely* from
     the examples you showed it. Garbage examples -> garbage behavior.
     """
@@ -107,7 +106,7 @@ def _learn_behavior(examples: list[ChatExample]) -> dict[str, str]:
 
 @dataclass
 class MockJob:
-    """A simulated fine-tuning job — the same surface as the real one.
+    """A simulated fine-tuning job, with the same surface as the real one.
 
     Drive it with poll() until is_done(); then read fine_tuned_model. The loss
     curve is fabricated from the hyperparameters so Section 8 has data to plot.
@@ -156,7 +155,7 @@ class MockJob:
 def create_job(training_file: str, *, model: str | None = None, hyperparameters: dict | None = None) -> MockJob:
     """Simulate fine_tuning.jobs.create(). Returns a MockJob in 'queued' state."""
     if training_file not in _files:
-        raise ValueError(f"unknown training file {training_file!r} — upload it first")
+        raise ValueError(f"unknown training file {training_file!r}; upload it first")
     digest = hashlib.sha1((training_file + str(hyperparameters)).encode()).hexdigest()[:6]
     return MockJob(
         id=f"ftjob-mock-{digest}",
@@ -172,7 +171,7 @@ def _fake_loss_curve(hyperparameters: dict, *, n_examples: int) -> list[float]:
     The point is pedagogical (Section 8): more epochs -> more steps and a lower
     final loss, but with diminishing returns and rising overfitting risk; a higher
     learning-rate multiplier descends faster but gets noisier. None of this is a
-    real optimizer — it's a shape that lets you *read* a loss curve offline.
+    real optimizer. It's a shape that lets you *read* a loss curve offline.
     """
     epochs = int(hyperparameters.get("n_epochs", 3))
     lr_mult = float(hyperparameters.get("learning_rate_multiplier", 1.0))

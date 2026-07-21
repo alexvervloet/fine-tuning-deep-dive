@@ -1,9 +1,8 @@
 """
-finetune/dataset.py — the chat JSONL format, and reading/splitting it.
-======================================================================
+finetune/dataset.py: the chat JSONL format, and reading/splitting it.
 
 THE DATASET IS THE PRODUCT. A fine-tune is only ever as good as the examples you
-show it — the model learns the *behavior demonstrated*, format quirks and all.
+show it. The model learns the *behavior demonstrated*, format quirks and all.
 So this file is about one thing: the file format your examples live in, and the
 basic operations on it (load, split, write).
 
@@ -19,7 +18,7 @@ training example per line, each example a chat conversation:
 Why this shape? Because fine-tuning teaches the model to produce the *assistant*
 turn given the *system + user* turns. Each line is one worked example of "when
 you see input like this, behave like this." The system prompt should match the
-one you'll use at inference time — the model learns to associate that instruction
+one you'll use at inference time; the model learns to associate that instruction
 with that behavior.
 
 We model a training example as a `ChatExample` (a list of `Message`s) so the rest
@@ -102,12 +101,12 @@ def train_val_split(
     examples: list[ChatExample], *, val_fraction: float = 0.2, seed: int = 0
 ) -> tuple[list[ChatExample], list[ChatExample]]:
     """Split examples into (train, val). Shuffles with a fixed seed so the split
-    is reproducible — you want the same held-out set every run so the eval number
+    is reproducible: you want the same held-out set every run so the eval number
     is comparable across experiments.
 
     The validation set is what the provider scores during training (the val loss
     curve in Section 8). It is NOT the same as your held-out *eval* set in
-    Section 7 — keep an eval set the model and the training process never touch,
+    Section 7: keep an eval set the model and the training process never touch,
     so "did it help?" is an honest, out-of-sample question.
     """
     if not 0.0 < val_fraction < 1.0:

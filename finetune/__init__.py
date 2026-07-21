@@ -1,18 +1,18 @@
 """
-finetune — a small, from-scratch library for learning to fine-tune models.
+finetune: a small, from-scratch library for learning to fine-tune models.
 
 Everything here is built to be *read*, not just used. The big idea: fine-tuning
 changes HOW a model behaves (its default format, tone, narrow skill), taught by
-EXAMPLES — and then you must PROVE it beat your baseline. The files map to that
+EXAMPLES, and then you must PROVE it beat your baseline. The files map to that
 arc:
 
-  providers.py   — the ONLY provider-specific file: chat generate() + the tuning
+  providers.py   the ONLY provider-specific file: chat generate() + the tuning
                    lifecycle (mock | openai | claude). The mock makes it free.
-  dataset.py     — the chat JSONL format: ChatExample, load/write, train/val split
-  databuild.py   — helpers for *building* examples (incl. distillation)
-  validate.py    — offline checks: schema, dedup, balance, token + cost estimate
-  mock_tuner.py  — the offline fine-tuning lifecycle (upload->job->poll->use)
-  evaluate.py    — did it help? accuracy + win-rate vs. baseline (held-out set)
+  dataset.py     the chat JSONL format: ChatExample, load/write, train/val split
+  databuild.py   helpers for *building* examples (incl. distillation)
+  validate.py    offline checks: schema, dedup, balance, token + cost estimate
+  mock_tuner.py  the offline fine-tuning lifecycle (upload->job->poll->use)
+  evaluate.py    did it help? accuracy + win-rate vs. baseline (held-out set)
 
 Import what you need, e.g.:
 

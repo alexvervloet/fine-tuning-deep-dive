@@ -1,14 +1,13 @@
 """
-finetune/providers.py — the ONLY file that talks to a fine-tuning backend.
-==========================================================================
+finetune/providers.py: the ONLY file that talks to a fine-tuning backend.
 
 Same keystone idea as every sibling repo: hide the provider-specific calls
 behind a tiny, uniform interface so the rest of the code is provider-agnostic.
 Fine-tuning has *two* kinds of provider call, not one:
 
-  1. a CHAT call  — using a model (base or fine-tuned) to generate text. This is
+  1. a CHAT call, using a model (base or fine-tuned) to generate text. This is
      what the eval step needs to compare "before" and "after."
-  2. a TUNING lifecycle — upload a training file, create a job, poll it to done,
+  2. a TUNING lifecycle: upload a training file, create a job, poll it to done,
      and learn the resulting model's name. This is what the rest of this repo is
      actually about.
 
@@ -21,7 +20,7 @@ There are three stacks, selected by the PROVIDER env var:
                        and what makes the entire learning arc free. See
                        mock_tuner.py for the simulated lifecycle.
   PROVIDER=openai  ->  real OpenAI fine-tuning + chat   (needs OPENAI_API_KEY,
-                       and the tuning job COSTS REAL MONEY — opt-in only).
+                       and the tuning job COSTS REAL MONEY, opt-in only).
   PROVIDER=claude  ->  chat only. Anthropic does not offer self-serve fine-tuning
                        (it's a limited/enterprise program), so the tuning
                        lifecycle is unavailable on this stack. You can still use
@@ -29,7 +28,7 @@ There are three stacks, selected by the PROVIDER env var:
                        as the strong "teacher" in the distillation example.
 
 Honesty matters here: hosted, self-serve fine-tuning in this repo is mainly an
-OpenAI path. That's not a limitation of the teaching — the *concepts* (the
+OpenAI path. That's not a limitation of the teaching; the *concepts* (the
 dataset is the product, validate before you spend, prove it beat the baseline)
 are provider-independent, and the mock lets you practice all of them for $0.
 """
@@ -89,14 +88,14 @@ _warned_fallback = False
 
 
 def _warn_mock_fallback(p: str) -> None:
-    """Announce — loudly, but only once — that we degraded to the mock, and why."""
+    """Announce, loudly but only once, that we degraded to the mock, and why."""
     global _warned_fallback
     if _warned_fallback:
         return
     _warned_fallback = True
     missing = ", ".join(_KEYS.get(p, []))
     print(
-        f"\n⚠  PROVIDER={p} is set, but {missing} isn't on the environment — did you\n"
+        f"\n⚠  PROVIDER={p} is set, but {missing} isn't on the environment. Did you\n"
         f"   forget `secrun`? Falling back to the offline mock so this still runs.\n"
         f"   Real model:  secrun python <script>   |   Hard error instead:  PROVIDER_STRICT=1\n",
         file=sys.stderr,
@@ -107,8 +106,8 @@ def provider_name() -> str:
     """The active stack: 'mock' (default), 'openai', or 'claude'.
 
     If a real provider is selected but its key isn't on the environment (the
-    classic "forgot `secrun`"), degrade to the offline mock — loudly, and only
-    once — so a demo keeps running instead of dying on a missing key. This is the
+    classic "forgot `secrun`"), degrade to the offline mock, loudly and only
+    once, so a demo keeps running instead of dying on a missing key. This is the
     *opposite* of a silent fallback: a stderr banner and `describe()` both announce
     it, so you can never mistake a keyless mock run for a real one. Set
     PROVIDER_STRICT=1 to make the missing key a hard error instead (recommended for
@@ -132,7 +131,7 @@ def can_tune() -> bool:
 
 
 def base_model() -> str:
-    """The base (un-tuned) model id for the active stack — what you fine-tune
+    """The base (un-tuned) model id for the active stack, what you fine-tune
     *from* and compare *against*."""
     return {"mock": _MOCK_MODEL, "openai": _OPENAI_CHAT, "claude": _CLAUDE_CHAT}.get(
         provider_name(), _MOCK_MODEL
@@ -150,7 +149,7 @@ def describe() -> str:
     if p == "mock" and configured != "mock":
         return (
             f"mock  (FALLBACK: PROVIDER={configured} is set but its key isn't on the "
-            f"environment — run under `secrun` for the real model)"
+            f"environment; run under `secrun` for the real model)"
         )
     if p == "mock":
         return f"mock  (offline, deterministic, model={_MOCK_MODEL}, no key, tuning simulated)"
@@ -164,7 +163,7 @@ def describe() -> str:
 def ensure_ready(*, for_tuning: bool = False) -> None:
     """Fail fast with a friendly message if the stack isn't configured.
 
-    For PROVIDER=mock this never fails — that's the point. Pass for_tuning=True
+    For PROVIDER=mock this never fails; that's the point. Pass for_tuning=True
     from the tune scripts so we can warn early when a stack can't fine-tune.
     """
     import sys
@@ -192,11 +191,11 @@ def ensure_ready(*, for_tuning: bool = False) -> None:
 
 
 # ---------------------------------------------------------------------------
-# The mock chat model — a deterministic, offline "model"
+# The mock chat model: a deterministic, offline "model"
 # ---------------------------------------------------------------------------
 #
 # It classifies short support messages into a category and a one-line reply,
-# from a tiny built-in rulebook. The point isn't the rules — it's that the mock
+# from a tiny built-in rulebook. The point isn't the rules: it's that the mock
 # is deterministic, so the eval in Section 7 produces a stable, reproducible
 # number with no key. The mock can be handed a "fine-tuned" behavior table by
 # the mock tuner (see apply_mock_finetune below); a base call uses the weaker
@@ -204,7 +203,7 @@ def ensure_ready(*, for_tuning: bool = False) -> None:
 
 # The base model's behavior: it handles the two most common categories it happens
 # to know (password -> account, refund -> billing) in roughly the house format, but
-# it rambles on everything else — no category, wrong shape. So it scores a low-but-
+# it rambles on everything else: no category, wrong shape. So it scores a low-but-
 # nonzero baseline (a real base model isn't literally 0%; it's just worse). Fine-
 # tuning fixes the format everywhere and adds the categories the base is missing.
 _MOCK_BASE_RULES = {
@@ -317,7 +316,7 @@ def generate(system: str, user: str, *, model: str | None = None, max_tokens: in
     """Turn a (system, user) prompt into an `LLMResponse`, from a chosen model.
 
     `model` defaults to the active stack's base model. Pass a fine-tuned model id
-    to use the tuned model instead — that's how the eval compares base vs tuned.
+    to use the tuned model instead; that's how the eval compares base vs tuned.
     """
     p = provider_name()
     model = model or base_model()
@@ -369,7 +368,7 @@ def generate(system: str, user: str, *, model: str | None = None, max_tokens: in
 #
 # These are thin wrappers so the real path reads the same as the mock path. They
 # are only reached on PROVIDER=openai AND with the explicit opt-in flag in the
-# tune script — never by default, never by the tests, never for free.
+# tune script: never by default, never by the tests, never for free.
 
 
 def openai_upload_training_file(path: str) -> str:

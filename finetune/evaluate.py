@@ -1,18 +1,17 @@
 """
-finetune/evaluate.py — did the fine-tune actually help? Prove it.
-================================================================
+finetune/evaluate.py: did the fine-tune actually help? Prove it.
 
 This is the punchline of the whole repo. A fine-tune that you *think* is better
 is worth nothing; the only thing worth shipping is one you can *show* beat your
 baseline on data the training never saw. This module is the from-scratch eval
-that does that — the same method as the evals deep dive (#5 in the series),
+that does that, the same method as the evals deep dive (#5 in the series),
 pointed at a single decision: base model vs. fine-tuned model.
 
 It offers the two comparisons that matter for fine-tuning:
 
-  1. accuracy on a held-out set — when there's a right answer (e.g. the correct
+  1. accuracy on a held-out set, when there's a right answer (e.g. the correct
      category), run both models and count exact matches. The headline number.
-  2. win-rate vs. baseline — when "better" is a matter of quality/format (no
+  2. win-rate vs. baseline, when "better" is a matter of quality/format (no
      single right string), show a judge both answers and tally which wins. This
      is the pairwise win-rate from evals/07_pairwise.py. Here the judge is a
      simple offline rubric scorer so the punchline runs free; in production you'd
@@ -47,7 +46,7 @@ def _predicted_category(text: str) -> str:
     """Pull the category label out of an assistant reply, if present.
 
     Our house format is 'category: <label> | reply: ...'. The base model doesn't
-    follow it; the fine-tuned model (should) — so even extracting the label is a
+    follow it; the fine-tuned model (should), so even extracting the label is a
     signal that the fine-tune taught the format.
     """
     if "category:" in text:
@@ -79,7 +78,7 @@ def _format_score(text: str) -> int:
     Rewards the structured 'category: ... | reply: ...' shape and a non-empty
     reply; penalizes the base model's rambling. Stands in for an LLM-as-judge so
     the win-rate runs offline. In production, replace with providers.generate()
-    asked to pick the better answer (and judge both orderings — see evals #9).
+    asked to pick the better answer (and judge both orderings; see evals #9).
     """
     score = 0
     if "category:" in text:
@@ -98,7 +97,7 @@ def win_rate(
 
     Returns {"A": .., "B": .., "TIE": ..}. By convention A is the baseline (base
     model) and B is the challenger (fine-tuned), so a high B count is the result
-    you're hoping for. This mirrors evals/07_pairwise.py — the rubric (here, the
+    you're hoping for. This mirrors evals/07_pairwise.py; the rubric (here, the
     format scorer) is the most important part: it defines what "better" means.
     """
     wins = {"A": 0, "B": 0, "TIE": 0}
