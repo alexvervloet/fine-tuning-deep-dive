@@ -1,6 +1,5 @@
 """
-Example 04 — run a fine-tune job: upload -> create -> poll -> use.
-=================================================================
+Example 04: run a fine-tune job: upload -> create -> poll -> use.
 
 This is the lifecycle every hosted fine-tune follows:
 
@@ -9,7 +8,7 @@ This is the lifecycle every hosted fine-tune follows:
     3. poll    the job until it's done  (fine_tuning.jobs.retrieve)
     4. use     the new model id
 
-It runs TWO ways, and the code is nearly identical for both — that's the point:
+It runs TWO ways, and the code is nearly identical for both. That's the point:
 
   * DEFAULT (PROVIDER=mock): the whole lifecycle is SIMULATED in-process, offline,
     deterministically, in under a second, for $0. No key. This is how you learn
@@ -22,7 +21,7 @@ It runs TWO ways, and the code is nearly identical for both — that's the point
     python examples/04_run_finetune.py            # mock, offline, free
     PROVIDER=openai secrun python examples/04_run_finetune.py --real   # PAID, opt-in
 
-After a successful run it prints the fine-tuned model id. Save it — Sections 6
+After a successful run it prints the fine-tuned model id. Save it; Sections 6
 and 7 use it to generate from, and to prove it beat the base model.
 """
 
@@ -42,7 +41,7 @@ load_dotenv()
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TRAIN = os.path.join(ROOT, "datasets", "support_train.jsonl")
 
-# Hyperparameters — Section 8 explains each. These are sensible defaults.
+# Hyperparameters: Section 8 explains each. These are sensible defaults.
 HYPERPARAMS = {"n_epochs": 3, "learning_rate_multiplier": 1.0, "suffix": "support"}
 
 
@@ -66,17 +65,17 @@ def run_mock() -> str:
 
     print(f"[4/4] Done. status={job.status}, trained_tokens={job.trained_tokens}")
     print(f"\nFine-tuned model: {job.fine_tuned_model}")
-    print("It's now registered with the mock provider — Sections 6 & 7 can use it.")
+    print("It's now registered with the mock provider, so Sections 6 & 7 can use it.")
     return job.fine_tuned_model or ""
 
 
 def run_real() -> str:
-    """The real OpenAI path — PAID. Guarded by --real and a confirmation."""
+    """The real OpenAI path, PAID. Guarded by --real and a confirmation."""
     providers.ensure_ready(for_tuning=True)
     model = providers.tunable_model()
 
     print("\n" + "!" * 70)
-    print("!! REAL FINE-TUNING JOB — THIS COSTS REAL MONEY.")
+    print("!! REAL FINE-TUNING JOB: THIS COSTS REAL MONEY.")
     print(f"!! Provider: openai   Base model: {model}")
     examples = finetune.load_jsonl(TRAIN)
     est = finetune.estimate_cost(examples, model=model, epochs=HYPERPARAMS["n_epochs"])
@@ -123,7 +122,7 @@ def main() -> int:
         run_real()
     else:
         if providers.provider_name() != "mock":
-            print(f"(PROVIDER={providers.provider_name()} set, but no --real flag — "
+            print(f"(PROVIDER={providers.provider_name()} set, but no --real flag, "
                   f"running the free mock lifecycle. Add --real to run the PAID job.)\n")
         run_mock()
     return 0

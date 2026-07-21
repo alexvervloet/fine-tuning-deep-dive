@@ -1,11 +1,10 @@
 """
-Example 03 — validate your data before you pay to train on it. OFFLINE, FREE.
-============================================================================
+Example 03: validate your data before you pay to train on it. OFFLINE, FREE.
 
 A fine-tune job is slow and (on a real provider) costs money. The cheapest way to
 not waste either is to check the dataset first. This runs every offline validation
 check on the hand-made set: schema, duplicates, class balance, and a token + cost
-estimate — then does it again on a deliberately BROKEN set so you can see the
+estimate, then does it again on a deliberately BROKEN set so you can see the
 checks catch real problems.
 
     python examples/03_validate_data.py
@@ -32,7 +31,7 @@ def show(report) -> None:
     print(f"  => {'OK to train' if report.ok else 'BLOCKED: fix the errors first'}\n")
 
 
-# 1. The real dataset — should pass clean.
+# 1. The real dataset: should pass clean.
 print("=== Validating the hand-made training set ===")
 examples = load_jsonl(TRAIN)
 report = validate_dataset(examples, model="gpt-4o-mini", epochs=3)
@@ -40,9 +39,9 @@ show(report)
 
 cost = __import__("finetune").estimate_cost(examples, model="gpt-4o-mini", epochs=3)
 print(f"Estimated OpenAI training cost (gpt-4o-mini, 3 epochs): ${cost:.4f}")
-print("(On PROVIDER=mock the cost is $0 — that's the whole point of practicing here.)\n")
+print("(On PROVIDER=mock the cost is $0; that's the whole point of practicing here.)\n")
 
-# 2. A deliberately broken dataset — watch the checks fire.
+# 2. A deliberately broken dataset: watch the checks fire.
 print("=== Validating a deliberately broken set ===")
 SYS = "You are a triage bot."
 broken = [

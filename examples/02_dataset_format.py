@@ -1,8 +1,7 @@
 """
-Example 02 — the dataset is the product: the chat JSONL format. OFFLINE, FREE.
-=============================================================================
+Example 02: the dataset is the product: the chat JSONL format. OFFLINE, FREE.
 
-A fine-tune learns the behavior your examples demonstrate — so the examples ARE
+A fine-tune learns the behavior your examples demonstrate, so the examples ARE
 the product. This script shows the format those examples live in (the same one
 OpenAI's fine-tuning API expects), builds one from scratch, loads the hand-made
 training set, and splits it into train/val.
@@ -50,11 +49,11 @@ train, val = train_val_split(examples, val_fraction=0.2, seed=0)
 print(f"\nSplit: {len(train)} train, {len(val)} val (val_fraction=0.2, seed=0).")
 print(
     "The VAL set is what the provider scores while training (the loss curve in "
-    "Section 8). It is NOT the held-out EVAL set from Section 7 — keep a third set "
+    "Section 8). It is NOT the held-out EVAL set from Section 7; keep a third set "
     "the training never touches, so 'did it help?' stays an honest out-of-sample test."
 )
 
 print(
-    "\nThe lesson: there's no model magic here yet — just well-formed examples. "
+    "\nThe lesson: there's no model magic here yet, just well-formed examples. "
     "Quality and consistency of these examples is ~all that determines your result."
 )

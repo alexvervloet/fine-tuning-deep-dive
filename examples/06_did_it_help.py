@@ -1,22 +1,21 @@
 """
-Example 06 — did it actually help? Base vs. fine-tuned on a held-out set.
-========================================================================
+Example 06: did it actually help? Base vs. fine-tuned on a held-out set.
 
 THE PUNCHLINE. A fine-tune you *think* is better is worth nothing; the only thing
 worth shipping is one you can *prove* beat your baseline on data the training
 never saw. This is the evals deep dive's method (#5 in the series) pointed at one
-decision: base model vs. fine-tuned model, on datasets/support_eval.jsonl — a
+decision: base model vs. fine-tuned model, on datasets/support_eval.jsonl, a
 HELD-OUT set, none of which was in training.
 
 Two comparisons, both from finetune/evaluate.py:
 
-  1. accuracy  — % of held-out examples where the predicted category matches gold.
+  1. accuracy: % of held-out examples where the predicted category matches gold.
                  The headline "is it right?" number.
-  2. win-rate  — pairwise, the way evals/07_pairwise.py does it: for each example
+  2. win-rate: pairwise, the way evals/07_pairwise.py does it. For each example
                  show a judge both answers and tally which is better. Here the
                  'judge' is an offline format rubric so this runs free; in
                  production you'd use an LLM-as-judge (judging both orderings to
-                 dodge position bias — see evals #9).
+                 dodge position bias; see evals #9).
 
     python examples/06_did_it_help.py
 """
@@ -76,7 +75,7 @@ def main() -> int:
     print(f"  tuned wins: {wins['B']}/{n} = {wins['B'] / n:.0%}")
     print(f"  ties:       {wins['TIE']}/{n}\n")
 
-    # 3. The gate — this is the decision, not a vibe.
+    # 3. The gate. This is the decision, not a vibe.
     helped = tuned_acc.accuracy > base_acc.accuracy or wins["B"] > wins["A"]
     if helped:
         print("VERDICT: the fine-tune beat the baseline -> worth shipping.")
@@ -86,7 +85,7 @@ def main() -> int:
     print(
         f"\nThat verdict is the whole point. 'It looks better' ships regressions; a "
         f"concrete '{delta:+.0%} accuracy, {wins['B'] / n:.0%} win-rate on the held-out "
-        f"set' is a result you can defend. Same method as the evals dive — only the "
+        f"set' is a result you can defend. Same method as the evals dive; only the "
         f"thing compared changed."
     )
     return 0

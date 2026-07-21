@@ -1,23 +1,22 @@
 """
-Example 07 — hyperparameters and reading the loss curve. OFFLINE, FREE.
-=====================================================================
+Example 07: hyperparameters and reading the loss curve. OFFLINE, FREE.
 
 You don't need many knobs to fine-tune, and the defaults are usually fine. But
 three matter enough to understand, and reading the training loss curve is how you
 tell whether they were right.
 
-  * n_epochs — how many times the model sees the whole dataset. Too few and it
+  * n_epochs: how many times the model sees the whole dataset. Too few and it
     hasn't learned the behavior; too many and it OVERFITS (memorizes the training
-    examples, generalizes worse). The tell: validation loss stops dropping — or
-    rises — while training loss keeps falling.
-  * learning_rate_multiplier — how big each update step is. Higher descends faster
+    examples, generalizes worse). The tell: validation loss stops dropping, or
+    rises, while training loss keeps falling.
+  * learning_rate_multiplier: how big each update step is. Higher descends faster
     but can overshoot and get noisy/unstable; lower is steadier but slower.
-  * batch_size — how many examples per update. Mostly a speed/stability tradeoff;
+  * batch_size: how many examples per update. Mostly a speed/stability tradeoff;
     leave it on auto unless you have a reason.
 
 This script renders the (simulated) loss curve the mock fabricates from the
 hyperparameters, for a few settings, so you can SEE these tradeoffs offline. The
-curve is illustrative — the shapes and what they mean are real.
+curve is illustrative, but the shapes and what they mean are real.
 
     python examples/07_hyperparameters.py
 """
@@ -64,7 +63,7 @@ def main() -> int:
 
     print(
         "\nHow to read it:\n"
-        "  * More epochs -> more steps and a lower final TRAINING loss — but the\n"
+        "  * More epochs -> more steps and a lower final TRAINING loss, but the\n"
         "    real question is the VALIDATION loss. When val loss flattens or rises\n"
         "    while train loss keeps dropping, you're overfitting: stop earlier.\n"
         "  * A higher learning-rate multiplier descends faster but gets noisier;\n"

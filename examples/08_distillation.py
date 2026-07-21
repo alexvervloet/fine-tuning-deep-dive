@@ -1,12 +1,11 @@
 """
-Example 08 — distillation: train a small model on a strong model's outputs.
-==========================================================================
+Example 08: distillation: train a small model on a strong model's outputs.
 
-The most common production shape of fine-tuning isn't hand-labeling data — it's
+The most common production shape of fine-tuning isn't hand-labeling data. It's
 DISTILLATION: take a big, expensive, smart model (the TEACHER) that already does
 your task well, run it over a pile of inputs, and use its answers as the training
 data for a small, cheap, fast model (the STUDENT). The student learns to imitate
-the teacher on your task — at a fraction of the per-call cost and latency.
+the teacher on your task, at a fraction of the per-call cost and latency.
 
 Why it's so common: the labels write themselves. You don't sit there writing
 assistant turns; the teacher generates them. That's what makes a distillation set
@@ -15,7 +14,7 @@ of hundreds or thousands of examples cheap to build.
 This script BUILDS a distillation dataset (offline on the mock: the 'teacher' is
 just the mock answering in the house format; on a real provider, point the teacher
 at a strong model like gpt-4o or claude). It then validates the result so you can
-see it's a normal training file — ready to feed into Section 5's tune step.
+see it's a normal training file, ready to feed into Section 5's tune step.
 
     python examples/08_distillation.py
     PROVIDER=openai secrun python examples/08_distillation.py   # teacher = a real model
@@ -35,7 +34,7 @@ load_dotenv()
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "datasets", "support_distilled.jsonl")
 
-# Unlabeled inputs — in real life, a sample of your production traffic. Notice
+# Unlabeled inputs: in real life, a sample of your production traffic. Notice
 # there are no answers here; the teacher will produce them.
 UNLABELED = [
     "I can't get into my account, the password reset email never came",
@@ -97,7 +96,7 @@ def main() -> int:
         "turns came from a model instead of a human. Feed support_distilled.jsonl\n"
         "into Section 5 to tune the small STUDENT, then Section 7 to check it kept\n"
         "the teacher's quality at the student's cost. Caveat: the student can only\n"
-        "be as good as the teacher, and it inherits the teacher's mistakes — so you\n"
+        "be as good as the teacher, and it inherits the teacher's mistakes, so you\n"
         "still gate on a held-out eval, not on 'it matched the teacher.'"
     )
     return 0

@@ -1,17 +1,16 @@
 """
-Example 05 — using the fine-tuned model. OFFLINE on the mock.
-============================================================
+Example 05: using the fine-tuned model. OFFLINE on the mock.
 
 Once a job succeeds, the provider hosts your model under a new id (e.g.
 'ft:gpt-4o-mini:...'). Using it is just a normal chat call with that id as the
-model — no special API. This script tunes on the mock (fast and free), then asks
+model, with no special API. This script tunes on the mock (fast and free), then asks
 both the BASE model and the FINE-TUNED model the same questions, side by side, so
 you can SEE the behavior change.
 
 Watch what changes: the base model handles the one or two categories it happens to
 know (the password one) but rambles and ignores the house format on the rest; the
 fine-tuned model answers EVERY one in the trained 'category: ... | reply: ...'
-shape. That's the whole idea — fine-tuning changed HOW it behaves, taught only by
+shape. That's the whole idea: fine-tuning changed HOW it behaves, taught only by
 examples.
 
     python examples/05_use_model.py
@@ -74,7 +73,7 @@ def main() -> int:
         print(f"  tuned: {tuned_ans}\n")
 
     print(
-        "Same prompt, same model family — only the training changed the behavior. "
+        "Same prompt, same model family; only the training changed the behavior. "
         "Seeing the difference is reassuring, but it's not proof. Section 7 turns "
         "this into a number on a held-out set: did it ACTUALLY help?"
     )

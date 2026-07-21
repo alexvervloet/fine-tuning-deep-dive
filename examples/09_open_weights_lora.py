@@ -1,13 +1,12 @@
 """
-Example 09 — beyond hosted: open-weight fine-tuning & LoRA/PEFT. CONCEPTUAL.
-==========================================================================
+Example 09: beyond hosted: open-weight fine-tuning & LoRA/PEFT. CONCEPTUAL.
 
 Everything so far was HOSTED fine-tuning: you hand a provider a JSONL file, they
 train the model on their hardware, and they host the result. The other world is
 OPEN-WEIGHT fine-tuning: you download a model whose weights are public (Llama,
 Mistral, Qwen, Gemma, ...) and train it yourself, on your own (or rented) GPU.
 
-This script doesn't train anything — running open weights needs a GPU and a
+This script doesn't train anything; running open weights needs a GPU and a
 different stack (PyTorch + Hugging Face transformers/peft), which is its own deep
 dive. It explains the two ideas you need so the landscape isn't a mystery, and it
 shows that YOUR DATASET IS THE SAME ASSET either way: the file you built and
@@ -42,11 +41,11 @@ def main() -> int:
     print("Full fine-tuning vs. LoRA / PEFT")
     print("=" * 60)
     print(
-        "FULL fine-tuning updates ALL the model's weights — billions of numbers.\n"
+        "FULL fine-tuning updates ALL the model's weights, billions of numbers.\n"
         "  Accurate but heavy: lots of GPU memory, a full-size copy per task.\n\n"
         "LoRA (Low-Rank Adaptation), the most common PEFT (Parameter-Efficient\n"
         "  Fine-Tuning) method, freezes the original weights and trains a tiny pair\n"
-        "  of low-rank 'adapter' matrices alongside them — often <1% as many\n"
+        "  of low-rank 'adapter' matrices alongside them, often <1% as many\n"
         "  trainable parameters. You get ~the same behavior change for a fraction\n"
         "  of the memory and time, and the adapter is a small file you can swap in\n"
         "  per task. QLoRA adds 4-bit quantization so it fits on a single consumer\n"
@@ -58,7 +57,7 @@ def main() -> int:
     print("=" * 60)
     print(
         f"The {n}-example chat JSONL you built and validated here is exactly what an\n"
-        "open-weight trainer (transformers/trl/peft) consumes too — same 'messages'\n"
+        "open-weight trainer (transformers/trl/peft) consumes too: same 'messages'\n"
         "shape, applied via the model's chat template. The transferable skills are\n"
         "the dataset and the eval gate; only the training BUTTON changes.\n"
     )
@@ -67,7 +66,7 @@ def main() -> int:
     print("=" * 60)
     print(
         "Running and training open weights is hardware-and-framework-heavy enough to\n"
-        "be its own topic — a sibling Local-models deep dive (running open weights\n"
+        "be its own topic: a sibling Local-models deep dive (running open weights\n"
         "locally with Ollama / llama.cpp / vLLM, then LoRA-tuning them with\n"
         "Hugging Face peft + trl) is the place for the hands-on version. The bridge\n"
         "from here: the moment you have a validated dataset and an eval that gates\n"

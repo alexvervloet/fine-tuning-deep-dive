@@ -1,6 +1,5 @@
 """
-Example 01 — when to fine-tune (vs. prompt, few-shot, RAG). OFFLINE, FREE.
-=========================================================================
+Example 01: when to fine-tune (vs. prompt, few-shot, RAG). OFFLINE, FREE.
 
 Before any code, the most valuable skill in fine-tuning is knowing when NOT to.
 Fine-tuning is the slow, expensive, provider-specific option, and reaching for it
@@ -18,7 +17,7 @@ behavior/format every time, or lower cost/latency on a fixed task -> fine-tune.
 If the model needs to act or fetch live data -> tools.
 
 This script is a tiny decision function. It takes a short description of your
-problem and recommends an approach, with the reasoning — no model, no key, no cost.
+problem and recommends an approach, with the reasoning. No model, no key, no cost.
 
     python examples/01_when_to_finetune.py
     python examples/01_when_to_finetune.py "answer questions about our internal wiki, with citations"
@@ -29,7 +28,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Keyword signals for each approach. This is deliberately simple — the point is the
+# Keyword signals for each approach. This is deliberately simple: the point is the
 # *reasoning*, which it prints, not a clever classifier.
 _SIGNALS = {
     "RAG": (
@@ -42,16 +41,16 @@ _SIGNALS = {
         ["format", "tone", "style", "consistent", "every time", "house style", "voice",
          "classify", "structured output", "cheaper", "latency", "faster", "smaller model"],
         "You need a consistent BEHAVIOR/format, or lower cost/latency on a fixed, "
-        "high-volume task. That's taught by examples — what training adjusts.",
+        "high-volume task. That's taught by examples, which is what training adjusts.",
     ),
     "Long context": (
         ["small", "fits in the prompt", "one document", "short", "paste"],
-        "If the material fits in the prompt, just include it — retrieval and training "
+        "If the material fits in the prompt, just include it; retrieval and training "
         "are machinery you don't need yet.",
     ),
     "Tools / agents": (
         ["act", "action", "live data", "real-time", "call an api", "book", "send", "fetch"],
-        "The gap is CAPABILITY, not knowledge or behavior — give the model tools. "
+        "The gap is CAPABILITY, not knowledge or behavior, so give the model tools. "
         "(See the agents deep dive.)",
     ),
     "Better prompt / few-shot": (
@@ -88,7 +87,7 @@ def main() -> int:
         cases = [" ".join(sys.argv[1:])]
     else:
         cases = CASES
-        print("No problem given — running the built-in examples.\n"
+        print("No problem given, so running the built-in examples.\n"
               "Try:  python examples/01_when_to_finetune.py \"your problem here\"\n")
 
     for problem in cases:
