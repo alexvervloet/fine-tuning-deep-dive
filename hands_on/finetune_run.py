@@ -1,6 +1,5 @@
 """
-hands_on/finetune_run.py — the capstone: the whole fine-tune, end to end.
-=========================================================================
+hands_on/finetune_run.py: the capstone: the whole fine-tune, end to end.
 
 Everything in the repo, wired into one command that does the real workflow:
 
@@ -8,7 +7,7 @@ Everything in the repo, wired into one command that does the real workflow:
 
 That last step is the discipline the whole repo is about: a fine-tune ships only
 when it provably beats the base model on a held-out set. If it doesn't, the gate
-says so and exits non-zero — the same shape as a CI eval gate.
+says so and exits non-zero, the same shape as a CI eval gate.
 
 It runs entirely offline on PROVIDER=mock (the default): validate the hand-made
 set, simulate the tune, evaluate base vs. tuned on the held-out set, and gate. To
@@ -67,7 +66,7 @@ def tune_mock(train_path: str) -> str:
     print(f"job {job.id} created")
     while not job.is_done():
         print(f"  ... {job.poll()}")
-    print(f"succeeded — trained_tokens={job.trained_tokens}")
+    print(f"succeeded: trained_tokens={job.trained_tokens}")
     return job.fine_tuned_model or ""
 
 
@@ -78,11 +77,11 @@ def tune_real(train_path: str) -> str:
     examples = load_jsonl(train_path)
     est = finetune.estimate_cost(examples, model=model, epochs=HYPERPARAMS["n_epochs"])
     print("!" * 64)
-    print("!! REAL OPENAI FINE-TUNE — COSTS REAL MONEY AND TAKES A WHILE.")
+    print("!! REAL OPENAI FINE-TUNE: COSTS REAL MONEY AND TAKES A WHILE.")
     print(f"!! base={model}  rough estimate ${est:.4f}  (verify on OpenAI's pricing page)")
     print("!" * 64)
     if input("Type 'yes, charge me' to proceed: ").strip() != "yes, charge me":
-        sys.exit("Aborted — nothing uploaded, nothing charged.")
+        sys.exit("Aborted. Nothing uploaded, nothing charged.")
     file_id = providers.openai_upload_training_file(train_path)
     job_id = providers.openai_create_job(file_id, model=model, hyperparameters={"n_epochs": HYPERPARAMS["n_epochs"]})
     print(f"job {job_id} created; polling...")
@@ -112,7 +111,7 @@ def main() -> int:
     providers.ensure_ready(for_tuning=True)
     print(f"Provider: {providers.describe()}")
 
-    # 1. Validate — never train on a dataset you haven't checked.
+    # 1. Validate. Never train on a dataset you haven't checked.
     step(1, "Validate the training data (offline, free)")
     examples = load_jsonl(train_path)
     report = validate_dataset(examples, model=providers.base_model(), epochs=HYPERPARAMS["n_epochs"])
@@ -122,10 +121,10 @@ def main() -> int:
     if not report.ok:
         for e in report.errors:
             print(f"  x {e}")
-        print("\nGATE: dataset has errors — fix them before training. Exiting.")
+        print("\nGATE: dataset has errors. Fix them before training. Exiting.")
         return 1
 
-    # 2. Tune — mock by default, real only with --real on PROVIDER=openai.
+    # 2. Tune: mock by default, real only with --real on PROVIDER=openai.
     step(2, "Fine-tune")
     if args.real:
         if providers.provider_name() != "openai":
@@ -133,13 +132,13 @@ def main() -> int:
         tuned = tune_real(train_path)
     else:
         if providers.provider_name() != "mock":
-            print(f"(PROVIDER={providers.provider_name()} but no --real — using the free mock.)")
+            print(f"(PROVIDER={providers.provider_name()} but no --real, so using the free mock.)")
         tuned = tune_mock(train_path)
     base = providers.base_model()
     print(f"base model:  {base}")
     print(f"tuned model: {tuned}")
 
-    # 3. Eval-gate — base vs. tuned on the held-out set.
+    # 3. Eval-gate: base vs. tuned on the held-out set.
     step(3, "Evaluate base vs. tuned on the held-out set")
     held_out = load_jsonl(eval_path)
     base_acc = accuracy_on(held_out, model=base, system=SUPPORT_SYSTEM)
