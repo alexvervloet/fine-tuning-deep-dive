@@ -34,10 +34,10 @@ def show(report) -> None:
 # 1. The real dataset: should pass clean.
 print("=== Validating the hand-made training set ===")
 examples = load_jsonl(TRAIN)
-report = validate_dataset(examples, model="gpt-4o-mini", epochs=3)
+report = validate_dataset(examples, model="gpt-4o-mini-2024-07-18", epochs=3)
 show(report)
 
-cost = __import__("finetune").estimate_cost(examples, model="gpt-4o-mini", epochs=3)
+cost = __import__("finetune").estimate_cost(examples, model="gpt-4o-mini-2024-07-18", epochs=3)
 print(f"Estimated OpenAI training cost (gpt-4o-mini, 3 epochs): ${cost:.4f}")
 print("(On PROVIDER=mock the cost is $0; that's the whole point of practicing here.)\n")
 
@@ -56,7 +56,7 @@ broken = [
 good = ChatExample([Message("system", SYS), Message("user", "cancel plan"),
                     Message("assistant", "category: billing | reply: Cancel under Billing > Plan.")])
 broken += [good, good, good]
-report = validate_dataset(broken, model="gpt-4o-mini", epochs=3)
+report = validate_dataset(broken, model="gpt-4o-mini-2024-07-18", epochs=3)
 show(report)
 
 print(

@@ -32,9 +32,11 @@ _VALID_ROLES = {"system", "user", "assistant"}
 # Training cost ~= (tokens per example) x (number of examples) x (epochs).
 # These are illustrative ballparks for teaching the *shape* of the cost: always
 # check the provider's current pricing page before running a real job.
+# Only the gpt-4o line was ever offered for self-serve supervised fine-tuning,
+# so there is no gpt-5 entry here: naming one would imply a job you cannot run.
 _TRAIN_USD_PER_1M = {
-    "gpt-4o-mini": 3.00,
     "gpt-4o-mini-2024-07-18": 3.00,
+    "gpt-4o-mini": 3.00,
     "mock-1": 0.0,  # the mock is free, on purpose
 }
 
@@ -173,7 +175,7 @@ def estimate_cost(examples: list[ChatExample], *, model: str, epochs: int = 3) -
 
 
 def validate_dataset(
-    examples: list[ChatExample], *, model: str = "gpt-4o-mini", epochs: int = 3
+    examples: list[ChatExample], *, model: str = "gpt-4o-mini-2024-07-18", epochs: int = 3
 ) -> ValidationReport:
     """Run every check and bundle the result into one ValidationReport."""
     report = ValidationReport(n_examples=len(examples))

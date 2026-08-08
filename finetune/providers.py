@@ -42,12 +42,26 @@ from dataclasses import dataclass
 from functools import lru_cache
 
 # Default models per stack. Match the sibling repos' model IDs exactly.
-_OPENAI_CHAT = "gpt-4o-mini"           # the base model we fine-tune (and the default chat model)
+_OPENAI_CHAT = "gpt-5.4-nano"           # the default chat model (base + teacher)
 _CLAUDE_CHAT = "claude-haiku-4-5"
 _MOCK_MODEL = "mock-1"
 
-# The model families that OpenAI currently supports for self-serve fine-tuning.
-# (gpt-4o-mini is the cheap, sensible default to learn on.)
+# The base model the real OpenAI fine-tune path targets.
+#
+# READ THIS BEFORE YOU PLAN A PROJECT AROUND IT: OpenAI is winding down
+# self-serve fine-tuning. The dates they published are
+#
+#   2026-05-07  orgs that had never fine-tuned lose the ability to start
+#   2026-07-02  orgs with no fine-tuned inference in the last 60 days lose it
+#   2027-01-06  remaining active customers lose it
+#
+# Inference on already-tuned models keeps working until the base model itself
+# is retired. In practice, if you are reading this for the first time, creating
+# a job will fail with `training_not_available` no matter which base you name.
+#
+# The ID below stays on the gpt-4o line deliberately: the gpt-5 line was never
+# offered for self-serve supervised fine-tuning, so there is no newer value that
+# would work here. Section 9 covers what to do instead.
 _OPENAI_TUNABLE = "gpt-4o-mini-2024-07-18"
 
 _KEYS = {
@@ -328,7 +342,7 @@ def generate(system: str, user: str, *, model: str | None = None, max_tokens: in
     if p == "openai":
         resp = _openai_client().chat.completions.create(
             model=model,
-            max_tokens=max_tokens,
+            max_completion_tokens=max_tokens,
             messages=[
                 {"role": "system", "content": system},
                 {"role": "user", "content": user},

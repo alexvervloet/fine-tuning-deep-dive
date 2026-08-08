@@ -119,7 +119,7 @@ model versus the base model?
 <details><summary>▸ Answer</summary>
 
 Almost nothing. It's a normal chat call; you just pass the **new model id** (e.g.
-`ft:gpt-4o-mini:...`) instead of the base id. There's no special "use a fine-tune"
+`ft:gpt-5.4-nano:...`) instead of the base id. There's no special "use a fine-tune"
 endpoint. The behavior change lives in the weights, not the API shape.
 </details>
 

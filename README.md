@@ -10,8 +10,21 @@ The twist that makes this repo work: it runs **completely offline on a mock
 provider**, with no API key. Real fine-tuning costs money and takes minutes-to-hours,
 which is a terrible way to learn the *shape* of it. So the default `PROVIDER=mock`
 ships a tiny deterministic "model" and a **simulated fine-tune lifecycle**
-(upload → job → poll → use) that runs in-process, in under a second, for $0. Flip
-one env var and the exact same code runs a real, paid OpenAI fine-tune.
+(upload → job → poll → use) that runs in-process, in under a second, for $0.
+
+> **The real OpenAI path is closing.** OpenAI is winding down self-serve
+> fine-tuning: orgs that had never fine-tuned lost the ability to start new jobs
+> on 2026-05-07, orgs with no recent fine-tuned inference on 2026-07-02, and the
+> remainder go on 2027-01-06. Inference on already-tuned models keeps working
+> until the base model retires. If you are new to this, `--real` will return
+> `training_not_available` whatever base model you name.
+>
+> This does not make the repo obsolete, and nothing here was removed. The
+> mechanics (build a dataset, validate it, run the lifecycle, prove the tuned
+> model beat the baseline) are the transferable part, and the *method* is
+> identical whether the trainer is OpenAI, a cloud GPU, or MLX on your laptop.
+> What changed is where you run it. Section 9 (distillation) and Section 10
+> (open-weight fine-tuning with LoRA/PEFT) are where that now happens.
 
 This repo is **standalone**: it teaches everything it needs on its own. It is the
 hands-on version of the [RAG deep dive](https://github.com/alexvervloet/rag-deep-dive)'s
@@ -68,13 +81,13 @@ provider with no key. Pick a real provider only when you want to run an actual
 | `PROVIDER` | What runs | Key needed |
 |------------|-----------|------------|
 | `mock` (default) | Deterministic in-process model **+ a simulated fine-tune lifecycle**. The entire repo, free. | none |
-| `openai` | Real chat **+ the real fine-tuning API**. Running a job **costs real money** and is opt-in (`--real`). | `OPENAI_API_KEY` |
+| `openai` | Real chat. The fine-tuning API is **being retired** (see the note above); `--real` now fails with `training_not_available` for most accounts. See Sections 9-10 for what replaces it. Still the default chat/teacher stack. | `OPENAI_API_KEY` |
 | `claude` | Chat only. Anthropic fine-tuning is a limited/enterprise program, not self-serve. Usable as a base/teacher model. | `ANTHROPIC_API_KEY` |
 
 > **You can complete every section for $0.** The mock simulates uploading,
-> training, polling, and serving a fine-tuned model. The only thing it can't do is
-> spend your money. The real OpenAI path exists so you can see the identical code
-> hit a real provider, but you never *need* it to learn the ideas.
+> training, polling, and serving a fine-tuned model. That is now the *only* way
+> most readers can run the lifecycle end to end, which makes it the main path
+> rather than a convenience.
 
 ---
 
@@ -175,7 +188,7 @@ python examples/05_use_model.py
 ```
 
 Once a job succeeds, the provider hosts your model under a new id (e.g.
-`ft:gpt-4o-mini:...`). Using it is just a normal chat call with that id; there's
+`ft:gpt-5.4-nano:...`). Using it is just a normal chat call with that id; there's
 no special API. The example asks the **base** and the **fine-tuned** model the same
 questions side by side: the base handles the one or two categories it happens to
 know but rambles and ignores the house format on the rest; the tuned model snaps
