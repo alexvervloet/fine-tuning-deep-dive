@@ -11,7 +11,7 @@ python-dotenv>=1.0.0
 
 # OpenAI: used when PROVIDER=openai (chat + the fine-tuning API). Needed for the
 # real, opt-in, PAID fine-tune path.
-openai>=1.30.0
+openai>=2.0,<3
 
 # Anthropic: used when PROVIDER=claude (chat only; no self-serve fine-tuning).
-anthropic>=0.111.0
+anthropic>=0.111.0,<1
