@@ -30,6 +30,7 @@ get a cost warning and a confirmation prompt).
 import argparse
 import os
 import sys
+import time
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -71,8 +72,6 @@ def tune_mock(train_path: str) -> str:
 
 
 def tune_real(train_path: str) -> str:
-    import time
-
     model = providers.tunable_model()
     examples = load_jsonl(train_path)
     est = finetune.estimate_cost(examples, model=model, epochs=HYPERPARAMS["n_epochs"])
