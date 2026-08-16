@@ -180,8 +180,6 @@ def ensure_ready(*, for_tuning: bool = False) -> None:
     For PROVIDER=mock this never fails; that's the point. Pass for_tuning=True
     from the tune scripts so we can warn early when a stack can't fine-tune.
     """
-    import sys
-
     p = provider_name()
     if p not in _KEYS:
         sys.exit(
