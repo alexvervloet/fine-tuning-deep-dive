@@ -27,6 +27,7 @@ and 7 use it to generate from, and to prove it beat the base model.
 
 import os
 import sys
+import time
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -34,7 +35,6 @@ from dotenv import load_dotenv
 
 import finetune
 from finetune import mock_tuner, providers
-from finetune.dataset import train_val_split
 
 load_dotenv()
 
@@ -96,7 +96,6 @@ def run_real() -> str:
     print(f"      job id: {job_id}")
 
     print("[3/4] Polling (this can take a long time; Ctrl-C is safe, the job keeps running)...")
-    import time
     while True:
         info = providers.openai_poll_job(job_id)
         print(f"      ... {info['status']}")
