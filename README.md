@@ -506,6 +506,10 @@ any order; this sequence builds naturally:
 - [Architecture](https://github.com/alexvervloet/architecture-deep-dive): the seams between the components, each decision measured rather than asserted
 - [Professional Tools](https://github.com/alexvervloet/professional-tools-deep-dive): rebuild each from-scratch primitive with the tool professionals reach for, and measure both
 
+And the whole series lands in one codebase in the
+[capstone](https://github.com/alexvervloet/deep-dive-capstone): a codebase Q&A tool
+built step by step, one tag per dive.
+
 **Fine-tuning is a bonus dive in the series.** It slots most naturally after
 [RAG](https://github.com/alexvervloet/rag-deep-dive) (#4), whose "RAG, fine-tuning, or
 something else?" decision this repo makes hands-on, and leans on
