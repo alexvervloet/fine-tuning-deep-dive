@@ -68,7 +68,7 @@ def teacher_answer(user: str) -> str:
             cat = "technical"
         else:
             cat = "other"
-        return f"category: {cat} | reply: Happy to help with that — here's the quickest path."
+        return f"category: {cat} | reply: Happy to help with that. Here's the quickest path."
     return generate(SUPPORT_SYSTEM, user, model=TEACHER_MODEL).text
 
 

@@ -36,7 +36,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PREFERENCE_PAIRS = [
     {
         "prompt": "A customer writes: 'I was double-charged this month.'",
-        "chosen": "So sorry about that! I see the duplicate charge — I've refunded it, and it'll "
+        "chosen": "So sorry about that! I see the duplicate charge; I've refunded it, and it'll "
                   "post in 5-10 days. Anything else I can fix?",
         "rejected": "Per our billing policy, duplicate charges may occur and are reviewed within "
                     "5-10 business days in accordance with the terms of service section 4.2.",

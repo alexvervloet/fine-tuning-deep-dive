@@ -222,7 +222,7 @@ _MOCK_BASE_RULES = {
     "password": "category: account | reply: You can reset your password in Settings > Security.",
     "refund": "category: billing | reply: Refunds are available from the billing page within 30 days.",
 }
-_MOCK_BASE_FALLBACK = "Hmm, I'm not totally sure about that one — you could try poking around the settings?"
+_MOCK_BASE_FALLBACK = "Hmm, I'm not totally sure about that one. You could try poking around the settings?"
 
 # A fine-tuned model is just the base model plus a learned behavior table that the
 # mock tuner derives from the training data. Set by apply_mock_finetune().
@@ -289,7 +289,7 @@ def _mock_generate(system: str, user: str, model: str) -> LLMResponse:
         # paraphrases it never saw verbatim.
         if answer is _MOCK_BASE_FALLBACK:
             cat = _classify_mock(q)
-            answer = f"category: {cat} | reply: Happy to help — here's the quickest way to sort this out."
+            answer = f"category: {cat} | reply: Happy to help. Here's the quickest way to sort this out."
     else:
         answer = _MOCK_BASE_FALLBACK
         for keyword, reply in _MOCK_BASE_RULES.items():
