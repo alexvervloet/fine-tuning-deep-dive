@@ -68,7 +68,7 @@ pip install -r requirements.txt
 # 3. Copy the env file: the default runs keyless (no API key needed)
 cp .env.example .env
 #    (Real provider instead of the mock? Its key goes in your OS keychain,
-#     not .env: see ../SECRETS.md, then run scripts as `secrun python ...`.)
+#     not .env: see ../docs/SECRETS.md, then run scripts as `secrun python ...`.)
 
 # 4. Confirm everything is wired up (makes no API call, costs nothing)
 python check_setup.py
