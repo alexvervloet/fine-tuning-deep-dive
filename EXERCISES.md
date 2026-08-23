@@ -231,7 +231,8 @@ Reach for it when there's **no single correct output** but you can still say whi
 two is better: tone, conciseness, helpfulness, how firmly to refuse. Its data isn't
 `{prompt → ideal answer}`; it's `{prompt, chosen, rejected}` pairs. DPO nudges the
 model to make the *chosen* response more likely than the *rejected* one. The cheapest
-source of pairs is your own 👍/👎 traffic (the Production feedback flywheel).
+source of pairs is your own thumbs up and thumbs down traffic, the feedback loop from
+the Production dive.
 </details>
 
 ---
