@@ -1,57 +1,54 @@
 # Fine-tuning: A Guided Deep Dive
 
-A hands-on playground for learning **fine-tuning**, teaching a model new
-*behavior* from examples, from the ground up. You'll build a training set from
-scratch, validate it, run a fine-tune job, and then do the part everyone skips:
-*prove* the fine-tuned model actually beat the base model on data it never saw.
-No framework magic, just enough code to see how each step works.
+A hands-on playground for learning **fine-tuning**, meaning teaching a model new
+behavior from examples, from the ground up. You'll build a training set from scratch,
+validate it, run a fine-tune job, and then do the step most people skip: prove the
+fine-tuned model actually beat the base model on data it never saw. No framework magic,
+just enough code to see how each step works.
 
-The twist that makes this repo work: it runs **completely offline on a mock
-provider**, with no API key. Real fine-tuning costs money and takes minutes-to-hours,
-which is a terrible way to learn the *shape* of it. So the default `PROVIDER=mock`
-ships a tiny deterministic "model" and a **simulated fine-tune lifecycle**
-(upload → job → poll → use) that runs in-process, in under a second, for $0.
+Here is what makes this repo work. It runs completely offline on a mock provider, with no
+API key. Real fine-tuning costs money and takes minutes to hours, which is a terrible way
+to learn the shape of it. So the default `PROVIDER=mock` ships a tiny deterministic
+"model" and a simulated fine-tune lifecycle, upload then job then poll then use, that runs
+in-process in under a second for $0.
 
-> **The real OpenAI path is closing.** OpenAI is winding down self-serve
-> fine-tuning: orgs that had never fine-tuned lost the ability to start new jobs
-> on 2026-05-07, orgs with no recent fine-tuned inference on 2026-07-02, and the
-> remainder go on 2027-01-06. Inference on already-tuned models keeps working
-> until the base model retires. If you are new to this, `--real` will return
-> `training_not_available` whatever base model you name.
+> **The real OpenAI path is closing.** OpenAI is winding down self-serve fine-tuning.
+> Orgs that had never fine-tuned lost the ability to start new jobs on 2026-05-07, orgs
+> with no recent fine-tuned inference on 2026-07-02, and the remainder go on 2027-01-06.
+> Inference on already-tuned models keeps working until the base model retires. If you
+> are new to this, `--real` will return `training_not_available` whatever base model you
+> name.
 >
-> This does not make the repo obsolete, and nothing here was removed. The
-> mechanics (build a dataset, validate it, run the lifecycle, prove the tuned
-> model beat the baseline) are the transferable part, and the *method* is
-> identical whether the trainer is OpenAI, a cloud GPU, or MLX on your laptop.
-> What changed is where you run it. Section 9 (distillation) and Section 10
-> (open-weight fine-tuning with LoRA/PEFT) are where that now happens.
+> That does not make the repo obsolete, and nothing here was removed. The mechanics
+> transfer: build a dataset, validate it, run the lifecycle, prove the tuned model beat
+> the baseline. The method is identical whether the trainer is OpenAI, a cloud GPU, or
+> MLX on your laptop. What changed is where you run it. Section 9 on distillation and
+> Section 10 on open-weight fine-tuning with LoRA and PEFT are where that now happens.
 
-This repo is **standalone**: it teaches everything it needs on its own. It is the
-hands-on version of the [RAG deep dive](https://github.com/alexvervloet/rag-deep-dive)'s
-"RAG, fine-tuning, or something else?" section, and Section 7 borrows the win-rate
-method from the [Evals deep dive](https://github.com/alexvervloet/evals-deep-dive), but
-its code depends on neither.
+This repo is standalone and teaches everything it needs on its own. It is the hands-on
+version of the [RAG deep dive](https://github.com/alexvervloet/rag-deep-dive)'s "RAG,
+fine-tuning, or something else?" section, and Section 7 borrows the win-rate method from
+the [Evals deep dive](https://github.com/alexvervloet/evals-deep-dive). Its code depends
+on neither.
 
-Like its siblings, it's meant to be *walked through*. Each section ends with
-something to run, and **every section runs offline and free** on the mock.
-[EXERCISES.md](EXERCISES.md) has a predict-then-run prompt for each one.
+Like its siblings, walk through it. Each section ends with something to run, and every
+section runs offline and free on the mock. [EXERCISES.md](EXERCISES.md) has a
+predict-then-run prompt for each one.
 
 ---
 
 ## 0. The one big idea
 
-> **Fine-tuning changes how the model *behaves*, not what it *knows*. You teach
-> a default behavior with examples, and then you must *prove* it beat your
-> baseline.**
+> **Fine-tuning changes how the model behaves, not what it knows. You teach a default
+> behavior with examples, and then you have to prove it beat your baseline.**
 
-That's the whole repo. RAG and long context change *what's in the context window*
-(knowledge); fine-tuning changes *how the model responds by default* (format,
-tone, a narrow skill), taught only by showing it input→output examples. So the
-training set **is** the product; most of the work is building and validating it.
-And because "it feels better" is worth nothing, the discipline that makes
-fine-tuning real is the last step: measure the tuned model against the base model
-on a held-out set, and ship only if it wins. Hold onto that and none of this feels
-complicated.
+That is the whole repo. RAG and long context change what is in the context window, which
+is knowledge. Fine-tuning changes how the model responds by default, meaning format, tone,
+or one narrow skill, taught only by showing it input and output examples. So the training
+set is the product, and most of the work is building and validating it. And because "it
+feels better" is worth nothing, the step that makes fine-tuning real is the last one.
+Measure the tuned model against the base model on a held-out set, and ship only if it
+wins. Hold onto that and none of this feels complicated.
 
 ---
 
@@ -74,9 +71,8 @@ cp .env.example .env
 python check_setup.py
 ```
 
-The default stack is **offline and free**; the whole learning arc runs on a mock
-provider with no key. Pick a real provider only when you want to run an actual
-(paid) fine-tune:
+The default stack is offline and free, and the whole learning arc runs on a mock provider
+with no key. Pick a real provider only when you want to run an actual, paid fine-tune.
 
 | `PROVIDER` | What runs | Key needed |
 |------------|-----------|------------|
@@ -84,35 +80,33 @@ provider with no key. Pick a real provider only when you want to run an actual
 | `openai` | Real chat. The fine-tuning API is **being retired** (see the note above); `--real` now fails with `training_not_available` for most accounts. See Sections 9-10 for what replaces it. Still the default chat/teacher stack. | `OPENAI_API_KEY` |
 | `claude` | Chat only. Anthropic fine-tuning is a limited/enterprise program, not self-serve. Usable as a base/teacher model. | `ANTHROPIC_API_KEY` |
 
-> **You can complete every section for $0.** The mock simulates uploading,
-> training, polling, and serving a fine-tuned model. That is now the *only* way
-> most readers can run the lifecycle end to end, which makes it the main path
-> rather than a convenience.
+> **You can complete every section for $0.** The mock simulates uploading, training,
+> polling, and serving a fine-tuned model. That is now the only way most readers can run
+> the lifecycle end to end, which makes it the main path rather than a convenience.
 
 ---
 
-## 2. When to fine-tune: vs. prompt, few-shot, RAG
+## 2. When to fine-tune, against prompt, few-shot, and RAG
 
 ```bash
 python examples/01_when_to_finetune.py
 ```
 
-The most valuable fine-tuning skill is knowing when **not** to. Fine-tuning is the
-slow, expensive, provider-specific option, and reaching for it first is the most
-common and costly mistake. One rule resolves most cases:
+The most valuable fine-tuning skill is knowing when not to. Fine-tuning is the slow,
+expensive, provider-specific option, and reaching for it first is the most common and
+costly mistake. One rule resolves most cases.
 
-- **RAG / long context** change *what's in the context* → reach for it when you
-  need facts that change or must be cited.
-- **Fine-tuning** changes *how the model behaves by default* → reach for it when
-  you need the same format/tone/skill every time, or lower cost/latency on a
-  fixed, high-volume task.
-- **Tools / agents** change *what the model can do* → reach for them when it must
-  act or fetch live data.
+- **RAG and long context** change what is in the context → reach for them when you need
+  facts that change or must be cited.
+- **Fine-tuning** changes how the model behaves by default → reach for it when you need
+  the same format, tone, or skill every time, or lower cost and latency on a fixed,
+  high-volume task.
+- **Tools and agents** change what the model can do → reach for them when it has to act
+  or fetch live data.
 
-The example walks a handful of real scenarios and lands each on the right tool.
-The headline rule of thumb, **don't fine-tune first**, is here for a reason:
-a better prompt or a few examples solves most of what people *think* needs
-training.
+The example walks a handful of real scenarios and lands each one on the right tool. The
+headline rule of thumb, don't fine-tune first, is here for a reason. A better prompt or a
+few examples solves most of what people think needs training.
 
 ---
 
@@ -122,9 +116,9 @@ training.
 python examples/02_dataset_format.py
 ```
 
-A fine-tune learns the behavior its examples demonstrate, so the examples *are*
-the product. Hosted fine-tuning uses **JSON Lines**: one conversation per line,
-each ending in the assistant turn you want the model to learn to produce.
+A fine-tune learns the behavior its examples demonstrate, so the examples are the
+product. Hosted fine-tuning uses JSON Lines: one conversation per line, each ending in the
+assistant turn you want the model to learn to produce.
 
 ```json
 {"messages": [
@@ -135,10 +129,10 @@ each ending in the assistant turn you want the model to learn to produce.
 ```
 
 The example builds one from scratch, loads the hand-made
-[`datasets/support_train.jsonl`](datasets/support_train.jsonl), and splits it into
-train/validation. The whole repo's running example is a **support-triage**
-assistant taught to answer in one rigid house format: exactly the kind of
-narrow, repeated behavior fine-tuning is good at.
+[`datasets/support_train.jsonl`](datasets/support_train.jsonl), and splits it into train
+and validation. The running example throughout the repo is a support-triage assistant
+taught to answer in one rigid house format, which is exactly the kind of narrow, repeated
+behavior fine-tuning is good at.
 
 ---
 
@@ -148,16 +142,15 @@ narrow, repeated behavior fine-tuning is good at.
 python examples/03_validate_data.py
 ```
 
-A fine-tune job is slow and (on a real provider) costs money. The cheapest way to
-waste neither is to check the dataset *first*. This runs every offline check on
-the hand-made set (**schema**, **duplicates**, **class balance**, and a **token +
-cost estimate**) then runs them again on a deliberately *broken* set so you can
-watch the checks catch real problems. Garbage in, garbage model: most bad
-fine-tunes are bad datasets that nobody validated.
+A fine-tune job is slow, and on a real provider it costs money. The cheapest way to waste
+neither is to check the dataset first. This runs every offline check on the hand-made set,
+covering schema, duplicates, class balance, and a token and cost estimate, then runs them
+again on a deliberately broken set so you can watch the checks catch real problems.
+Garbage in, garbage model. Most bad fine-tunes are bad datasets that nobody validated.
 
 ---
 
-## 5. Run a fine-tune job: upload → create → poll → use
+## 5. Run a fine-tune job, from upload to create to poll to use
 
 ```bash
 python examples/04_run_finetune.py
@@ -170,14 +163,13 @@ Every hosted fine-tune follows the same lifecycle:
 3. **poll** the job until it's done (`fine_tuning.jobs.retrieve`)
 4. **use** the new model id
 
-The example runs this **two ways with nearly identical code**, which is the
-point:
+The example runs this two ways with nearly identical code, which is the point.
 
-- **Default (`PROVIDER=mock`)** simulates the whole lifecycle in-process,
+- **The default, `PROVIDER=mock`,** simulates the whole lifecycle in-process,
   deterministically, in under a second, for $0.
-- **Opt-in real run** (`PROVIDER=openai` *and* `--real`) uploads your file and
-  starts a genuine job. It prints a cost warning and asks for confirmation first,
-  and it can take a while.
+- **The opt-in real run,** with `PROVIDER=openai` and `--real`, uploads your file and
+  starts a genuine job. It prints a cost warning and asks for confirmation first, and it
+  can take a while.
 
 ---
 
@@ -187,13 +179,13 @@ point:
 python examples/05_use_model.py
 ```
 
-Once a job succeeds, the provider hosts your model under a new id (e.g.
-`ft:gpt-5.4-nano:...`). Using it is just a normal chat call with that id; there's
-no special API. The example asks the **base** and the **fine-tuned** model the same
-questions side by side: the base handles the one or two categories it happens to
-know but rambles and ignores the house format on the rest; the tuned model snaps
-every one into the trained `category: ... | reply: ...` shape. That behavior
-change, taught only by examples, is the whole idea.
+Once a job succeeds, the provider hosts your model under a new id, something like
+`ft:gpt-5.4-nano:...`. Using it is a normal chat call with that id and no special API. The
+example asks the base and the fine-tuned model the same questions side by side. The base
+handles the one or two categories it happens to know, then rambles and ignores the house
+format on the rest. The tuned model snaps every one into the trained
+`category: ... | reply: ...` shape. That behavior change, taught only by examples, is the
+whole idea.
 
 ---
 
@@ -203,40 +195,42 @@ change, taught only by examples, is the whole idea.
 python examples/06_did_it_help.py
 ```
 
-**The punchline.** A fine-tune you *think* is better is worth nothing; the only
-thing worth shipping is one you can *prove* beat your baseline on data the training
-never saw. This points the [Evals deep dive](https://github.com/alexvervloet/evals-deep-dive)'s
-method at one decision, base vs. fine-tuned on the held-out
-[`datasets/support_eval.jsonl`](datasets/support_eval.jsonl), with two numbers:
+This is where the repo pays off. A fine-tune you think is better is worth nothing. The
+only thing worth shipping is one you can prove beat your baseline on data the training
+never saw. This points the
+[Evals deep dive](https://github.com/alexvervloet/evals-deep-dive)'s method at one
+decision, base against fine-tuned on the held-out
+[`datasets/support_eval.jsonl`](datasets/support_eval.jsonl), with two numbers.
 
-- **accuracy**: % of held-out examples where the predicted category matches gold.
-- **win-rate**: pairwise, the way `evals/07_pairwise.py` does it: show a judge both
-  answers and tally which is better. (Here the "judge" is an offline format rubric
-  so it runs free; in production you'd use an LLM-as-judge.)
+- **Accuracy.** The percentage of held-out examples where the predicted category matches
+  gold.
+- **Win-rate.** Pairwise, the way `evals/07_pairwise.py` does it. Show a judge both
+  answers and tally which is better. Here the judge is an offline format rubric so it
+  runs free; in production you would use an LLM-as-judge.
 
-If the tuned model doesn't beat the baseline, the honest move is to *not ship it* 
-and go back to the dataset.
+If the tuned model doesn't beat the baseline, the honest move is to not ship it and go
+back to the dataset.
 
 ---
 
-## 8. Hyperparameters & reading the loss curve
+## 8. Hyperparameters and reading the loss curve
 
 ```bash
 python examples/07_hyperparameters.py
 ```
 
-You don't need many knobs, and the defaults are usually fine, but three matter:
+You don't need many knobs and the defaults are usually fine, but three of them matter.
 
-- **n_epochs**: how many times the model sees the whole dataset. Too few and it
-  hasn't learned; too many and it **overfits**. The tell: validation loss stops
-  dropping (or rises) while training loss keeps falling.
-- **learning_rate_multiplier**: how big each step is. Higher is faster but can
-  overshoot; lower is steadier but slower.
-- **batch_size**: examples per update; mostly a speed/stability tradeoff. Leave
-  it on auto unless you have a reason.
+- **n_epochs** is how many times the model sees the whole dataset. Too few and it hasn't
+  learned. Too many and it overfits, which you spot when validation loss stops dropping,
+  or rises, while training loss keeps falling.
+- **learning_rate_multiplier** is how big each step is. Higher is faster and can
+  overshoot. Lower is steadier and slower.
+- **batch_size** is examples per update, mostly a speed and stability tradeoff. Leave it
+  on auto unless you have a reason.
 
-The example renders the (simulated) loss curve and shows what overfitting looks
-like, so the abstract knobs become a picture.
+The example renders the simulated loss curve and shows what overfitting looks like, so the
+abstract knobs turn into a picture.
 
 ---
 
@@ -246,85 +240,83 @@ like, so the abstract knobs become a picture.
 python examples/08_distillation.py
 ```
 
-The most common production shape of fine-tuning isn't hand-labeling. It's
-**distillation**: take a big, expensive, smart model (the **teacher**) that already
-does your task well, run it over a pile of inputs, and use its answers as training
-data for a small, cheap, fast model (the **student**). The labels write themselves,
-which is what makes a set of hundreds or thousands of examples cheap to build. The
-example *builds* a distillation dataset (on the mock, the "teacher" is just the mock
-in the house format; on a real provider you'd point it at `gpt-4o`/`claude`), then
-validates it, proving it's a normal training file you can feed straight into
-Section 5.
+The most common production shape of fine-tuning isn't hand-labeling. It's distillation.
+Take a big, expensive, smart model, the teacher, that already does your task well, run it
+over a pile of inputs, and use its answers as training data for a small, cheap, fast
+model, the student. The labels write themselves, which is what makes a set of hundreds or
+thousands of examples cheap to build. The example builds a distillation dataset. On the
+mock, the teacher is the mock in the house format; on a real provider you would point it
+at `gpt-4o` or `claude`. Then it validates the result, proving it is a normal training
+file you can feed straight into Section 5.
 
 ---
 
-## 10. Beyond hosted: open-weight fine-tuning & LoRA/PEFT
+## 10. Beyond hosted: open-weight fine-tuning with LoRA and PEFT
 
 ```bash
 python examples/09_open_weights_lora.py
 ```
 
-Everything so far was **hosted** fine-tuning: hand a provider a JSONL file, they
-train and host the result. The other world is **open-weight** fine-tuning: download
-a model whose weights are public (Llama, Mistral, Qwen, Gemma) and train it
-yourself on your own (or rented) GPU. This section is conceptual; running open
-weights needs a GPU and a different stack (PyTorch + Hugging Face
-`transformers`/`peft`), its own deep dive, but it explains the two ideas you need
-(**full fine-tuning vs. LoRA/PEFT**) and shows that **your dataset is the same
-asset either way**: the file you built in Sections 3–4 is exactly what an
-open-weight trainer consumes. To actually *run* open weights locally, see the
-**[Local Models deep dive](https://github.com/alexvervloet/local-models-deep-dive)**.
+Everything so far was hosted fine-tuning: hand a provider a JSONL file, and they train
+and host the result. The other world is open-weight fine-tuning. Download a model whose
+weights are public (Llama, Mistral, Qwen, Gemma) and train it yourself on your own GPU, or
+a rented one. This section is conceptual, because running open weights needs a GPU and a
+different stack (PyTorch plus Hugging Face `transformers` and `peft`) and deserves its own
+deep dive. It explains the two ideas you need, full fine-tuning against LoRA and PEFT, and
+shows that your dataset is the same asset either way. The file you built in Sections 3 and
+4 is exactly what an open-weight trainer consumes. To actually run open weights locally,
+see the
+[Local Models deep dive](https://github.com/alexvervloet/local-models-deep-dive).
 
 ---
 
-## 11. Preference tuning: learning from comparisons (DPO/RLHF)
+## 11. Preference tuning, learning from comparisons (DPO and RLHF)
 
 ```bash
 python examples/10_preference_tuning.py
 ```
 
-Every example so far taught by **demonstration**: show the one right answer and
-imitate (that's SFT). But some goals have no single right answer: "be warmer," "be
-more concise," "refuse this more firmly." You can't write THE correct reply, but you
-can say which of two replies is *better*. **Preference tuning** learns from exactly
-that, pairs of `{prompt, chosen, rejected}`. **RLHF** trains a reward model from the
-rankings; **DPO** (the modern shortcut) trains directly on the pairs. This section is
-conceptual: it shows the data shape, where the pairs come from (the Production dive's
-👍/👎 flywheel is the cheapest source), and how it's run (Hugging Face `trl`'s
-DPOTrainer, usually as a LoRA). The discipline is unchanged: still gate on a held-out
-eval before shipping.
+Every example so far taught by demonstration: show the one right answer and imitate, which
+is SFT. But some goals have no single right answer. "Be warmer", "be more concise", "refuse
+this more firmly". You cannot write the correct reply, and you can say which of two replies
+is better. Preference tuning learns from exactly that, pairs of
+`{prompt, chosen, rejected}`. RLHF trains a reward model from the rankings. DPO, the modern
+shortcut, trains directly on the pairs. This section is conceptual. It shows the data
+shape, where the pairs come from (the Production dive's thumbs up/down loop is the cheapest
+source), and how it gets run (Hugging Face `trl`'s DPOTrainer, usually as a LoRA). The
+discipline is unchanged. Still gate on a held-out eval before shipping.
 
 ---
 
 ## 12. Reinforcement fine-tuning (RFT): learning from a grader
 
-SFT learns from **demonstrations** (one right answer to imitate). Preference tuning
-learns from **comparisons** (A is better than B). **Reinforcement fine-tuning** learns
-from a **grader**: the model generates an answer, a scoring function rates it, and
-training pushes the model toward higher-scoring answers. There's no labeled target and
-no pair, just a way to *score* an attempt. This section is conceptual (no runnable
-example): graders are expensive and fiddly, and it's the most complex rung here.
+SFT learns from demonstrations, meaning one right answer to imitate. Preference tuning
+learns from comparisons, where A is better than B. Reinforcement fine-tuning learns from a
+grader. The model generates an answer, a scoring function rates it, and training pushes
+the model toward higher-scoring answers. There is no labeled target and no pair, just a
+way to score an attempt. This section is conceptual with no runnable example, because
+graders are expensive and fiddly and this is the most complex rung here.
 
-The whole game is the grader: a function `score(prompt, answer) -> number`. It can be
-a hard programmatic check (do the unit tests pass? does the JSON validate against the
-schema? does the math answer match?) or a model-as-judge scoring against a rubric. This
-is the "reinforcement learning from *verifiable* rewards" that trains modern reasoning
-models: when correctness is *checkable* but you can't write down THE one right output,
-a grader beats labeled data.
+The whole game is the grader, a function `score(prompt, answer) -> number`. It can be a
+hard programmatic check (do the unit tests pass? does the JSON validate against the
+schema? does the math answer match?) or a model-as-judge scoring against a rubric. This is
+the "reinforcement learning from verifiable rewards" that trains modern reasoning models.
+When correctness is checkable but you cannot write down the one right output, a grader
+beats labeled data.
 
-**When a grader beats labeled pairs**: reach for RFT when (a) success is easy to
-*verify* but hard to *demonstrate* (there are many correct programs, proofs, or plans,
-so you can check one but not enumerate them), (b) writing thousands of gold answers or
-preference pairs is more expensive than writing one scoring function, or (c) you're
-optimizing a multi-step behavior where only the *outcome* is gradeable. Stick with SFT
-when you *can* cheaply demonstrate the target, and preference tuning when quality is a
-matter of taste a judge can rank but not score objectively.
+Reach for RFT when success is easy to verify and hard to demonstrate, meaning there are
+many correct programs, proofs, or plans, so you can check one but not enumerate them. Or
+when writing thousands of gold answers or preference pairs costs more than writing one
+scoring function. Or when you are optimizing a multi-step behavior where only the outcome
+is gradeable. Stick with SFT when you can cheaply demonstrate the target, and with
+preference tuning when quality is a matter of taste a judge can rank but not score
+objectively.
 
-The catch, beyond cost: a model optimizing a score will **hack** a weak grader, passing
-the letter of the check while missing the point (the eval-gaming failure the
+There is a catch beyond cost. A model optimizing a score will hack a weak grader, passing
+the letter of the check while missing the point. That is the eval-gaming failure the
 [Evals dive](https://github.com/alexvervloet/evals-deep-dive) warns about, now inside the
-training loop). So the grader itself needs the same scrutiny as an eval, and the
-shipping discipline is unchanged: gate on a held-out set the grader never saw.
+training loop. So the grader needs the same scrutiny as an eval, and the shipping
+discipline is unchanged. Gate on a held-out set the grader never saw.
 
 ---
 
@@ -350,18 +342,18 @@ python hands_on/finetune_run.py --min-winrate 0.6
 PROVIDER=openai secrun python hands_on/finetune_run.py --real
 ```
 
-The gate is the discipline the whole repo is about: a fine-tune ships only when it
-*provably* beats the base model on a held-out set. If it doesn't, the gate says so
-and exits non-zero, the same shape as a CI eval gate. Read
-[hands_on/finetune_run.py](hands_on/finetune_run.py): it's just the library
-(`validate` + `mock_tuner` + `evaluate`) wired to a CLI.
+The gate is the discipline the whole repo is about. A fine-tune ships only when it
+provably beats the base model on a held-out set. If it doesn't, the gate says so and exits
+non-zero, the same shape as a CI eval gate. Read
+[hands_on/finetune_run.py](hands_on/finetune_run.py). It's the library, `validate` plus
+`mock_tuner` plus `evaluate`, wired to a CLI.
 
 ---
 
 ## Should I fine-tune at all? (the decision)
 
-Fine-tuning is rarely the first thing to reach for. Match the *problem* to the
-*tool* before you train anything:
+Fine-tuning is rarely the first thing to reach for. Match the problem to the tool before
+you train anything.
 
 | Your problem | Reach for | Why |
 |--------------|-----------|-----|
@@ -371,39 +363,40 @@ Fine-tuning is rarely the first thing to reach for. Match the *problem* to the
 | It must **act** or fetch **live** data | **Tools / agents** | Capability, not behavior or knowledge |
 | Lower **latency/cost** on a fixed, high-volume task | **Distill + fine-tune a smaller model** | Push known-good behavior into a cheaper model |
 
-Two rules of thumb. **Don't fine-tune first.** It's the slow, expensive,
-provider-specific option; a better prompt or RAG solves most of what looks like a
-training problem. And **never fine-tune on vibes.** The only way to know it
-helped is to measure it against a baseline (Section 7). They're also complementary,
-not either/or: a common production shape is *fine-tune for behavior + RAG for
-knowledge* in the same app.
+Two rules of thumb. Don't fine-tune first. It is the slow, expensive, provider-specific
+option, and a better prompt or RAG solves most of what looks like a training problem. And
+never fine-tune on vibes. The only way to know it helped is to measure it against a
+baseline, as Section 7 does. They also complement each other rather than competing. A
+common production shape is fine-tune for behavior plus RAG for knowledge, in the same
+app.
 
 ---
 
 ## Where to go next
 
-You've taught a model a behavior and proved it stuck. The frontier is more of the
-same idea, with more control:
+You've taught a model a behavior and proved it stuck. What comes next is more of the same
+idea, with more control.
 
-- **Preference tuning (DPO/RLHF)**: covered conceptually in §11 above; train on *comparisons* ("A is better than B"),
-  not just demonstrations, to shape subtler behavior.
-- **Reinforcement fine-tuning (RFT)**: covered conceptually in §12 above; train against a *grader* (a verifiable
-  check or a rubric judge) when success is checkable but not easily demonstrated, which is how reasoning models are trained.
-- **Open-weight LoRA in practice**: actually run Section 10 on a GPU with
-  `transformers`/`peft`/`trl`; pairs with the Local Models deep dive.
-- **Bigger, cleaner datasets**: the real lever is almost always *more and better
-  data*, not more epochs. Active learning: mine the cases your model gets wrong.
-- **Continuous fine-tuning**: re-tune on production traffic as it drifts, gated by
-  evals each time.
-- **Function-calling / structured-output fine-tunes**: teach a small model to emit
+- **Preference tuning (DPO and RLHF).** Covered conceptually in §11. Train on comparisons,
+  where A is better than B, as well as on demonstrations, to shape subtler behavior.
+- **Reinforcement fine-tuning (RFT).** Covered conceptually in §12. Train against a
+  grader, either a verifiable check or a rubric judge, when success is checkable but not
+  easily demonstrated. That is how reasoning models are trained.
+- **Open-weight LoRA in practice.** Actually run Section 10 on a GPU with `transformers`,
+  `peft`, and `trl`. Pairs with the Local Models deep dive.
+- **Bigger, cleaner datasets.** The real lever is almost always more and better data
+  rather than more epochs. Active learning means mining the cases your model gets wrong.
+- **Continuous fine-tuning.** Re-tune on production traffic as it drifts, gated by evals
+  each time.
+- **Function-calling and structured-output fine-tunes.** Teach a small model to emit
   reliable tool calls or JSON for a fixed schema.
 
 ---
 
 ## From teaching code to production
 
-The teaching shortcuts that make this repo free and fast are exactly what you'd
-replace once a fine-tuned model is on a live request path:
+The teaching shortcuts that make this repo free and fast are exactly what you would
+replace once a fine-tuned model sits on a live request path.
 
 | This repo's teaching shortcut | In production |
 |-------------------------------|---------------|
@@ -414,10 +407,10 @@ replace once a fine-tuned model is on a live request path:
 | The base model is fixed | A **model registry** + the option to re-tune as the base model and your traffic change |
 | Cost is estimated, never spent | A **training-cost budget** and per-call cost tracking once the tuned model serves traffic |
 
-The general ops machinery (observability, cost, reliability, caching, guardrails,
-prompt versioning, eval gates) is built from scratch and wired into one running
-app in **[Production](https://github.com/alexvervloet/ai-in-production-deep-dive)** (#8 in
-the series), which also runs offline on a mock provider.
+The general ops machinery (observability, cost, reliability, caching, guardrails, prompt
+versioning, eval gates) gets built from scratch and wired into one running app in
+[Production](https://github.com/alexvervloet/ai-in-production-deep-dive), #8 in the series,
+which also runs offline on a mock provider.
 
 ---
 
@@ -477,11 +470,11 @@ whole "fine-tune lifecycle" in one readable file.
 
 ## The series
 
-This is one of the standalone, hands-on deep dives into building with LLM APIs: eight core, plus the bonus dives listed below.
-Each one stands on its own, with its own setup, examples, and capstone, and they
-all share the same house style: provider-agnostic where it makes sense, built from
-scratch (no frameworks), offline-first examples, and a real capstone. Do them in
-any order; this sequence builds naturally:
+This is one of the standalone, hands-on deep dives into building with LLM APIs. Eight
+core dives, plus the bonus ones listed below. Each one stands on its own, with its own
+setup, examples, and capstone, and they all share one house style. Provider-agnostic
+where it makes sense, built from scratch with no frameworks, offline-first examples, and
+a real capstone at the end. Do them in any order. This sequence builds naturally.
 
 1. [OpenAI API](https://github.com/alexvervloet/openai-api-deep-dive): the API from zero
 2. [Claude API](https://github.com/alexvervloet/claude-api-deep-dive): the same ideas, the Anthropic way
@@ -494,20 +487,20 @@ any order; this sequence builds naturally:
 
 **Bonus dives**, standalone and slotting in where they're most useful:
 
-- [Context Engineering](https://github.com/alexvervloet/context-engineering-deep-dive): manage what's in the window: memory, compaction, assembly
-- [AI Data Engineering](https://github.com/alexvervloet/ai-data-engineering-deep-dive): the corpus behind the index: versions, lineage, ACLs, deletes
-- [Multimodal](https://github.com/alexvervloet/multimodal-deep-dive): images & audio, not just text
+- [Context Engineering](https://github.com/alexvervloet/context-engineering-deep-dive): manage what's in the window, with memory, compaction, and assembly
+- [AI Data Engineering](https://github.com/alexvervloet/ai-data-engineering-deep-dive): the corpus behind the index, with versions, lineage, ACLs, and deletes
+- [Multimodal](https://github.com/alexvervloet/multimodal-deep-dive): images and audio as well as text
 - [Fine-tuning](https://github.com/alexvervloet/fine-tuning-deep-dive): teach a model new behavior by example
-- [MCP](https://github.com/alexvervloet/mcp-deep-dive): serve tools, data & prompts to any LLM over a standard protocol
+- [MCP](https://github.com/alexvervloet/mcp-deep-dive): serve tools, data, and prompts to any LLM over a standard protocol
 - [Local Models](https://github.com/alexvervloet/local-models-deep-dive): run open-weight models on your own machine
-- [Agent Harnesses](https://github.com/alexvervloet/agent-harness-deep-dive): build on the loop: hooks, permissions, sandboxing, subagents
+- [Agent Harnesses](https://github.com/alexvervloet/agent-harness-deep-dive): build on the loop, adding hooks, permissions, sandboxing, and subagents
 - [Realtime Voice](https://github.com/alexvervloet/realtime-voice-deep-dive): low-latency speech-to-speech agents
-- [Observability](https://github.com/alexvervloet/observability-deep-dive): watch a running app over time: drift, quality, alerting, the flywheel
+- [Observability](https://github.com/alexvervloet/observability-deep-dive): watch a running app over time, covering drift, quality, alerting, and the feedback loop
 - [Architecture](https://github.com/alexvervloet/architecture-deep-dive): the seams between the components, each decision measured rather than asserted
-- [GenAI Security](https://github.com/alexvervloet/genai-security-deep-dive): treat the model as an untrusted principal: identity, supply chain, isolation, budgets, release gates
+- [GenAI Security](https://github.com/alexvervloet/genai-security-deep-dive): treat the model as an untrusted principal, and put identity, supply chain, isolation, budgets, and release gates around it
 - [Inference Platform Engineering](https://github.com/alexvervloet/inference-platform-deep-dive): turn finite GPU memory and a request queue into latency, throughput, and a fleet size you can defend
-- [Testing & Delivery](https://github.com/alexvervloet/testing-and-delivery-deep-dive): decide whether a build has earned promotion: evidence, gates, staged rollout, rollback
-- [Professional Tools](https://github.com/alexvervloet/professional-tools-deep-dive): rebuild each from-scratch primitive with the tool professionals reach for, and measure both
+- [Testing & Delivery](https://github.com/alexvervloet/testing-and-delivery-deep-dive): decide whether a build is fit to promote, using evidence, gates, staged rollout, and rollback
+- [Professional Tools](https://github.com/alexvervloet/professional-tools-deep-dive): rebuild each hand-written piece with the tool professionals reach for, and measure both
 
 And the whole series lands in one codebase in the
 [capstone](https://github.com/alexvervloet/deep-dive-capstone): a codebase Q&A tool
