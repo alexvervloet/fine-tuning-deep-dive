@@ -78,7 +78,7 @@ def main() -> int:
     print("=" * 64)
     print(
         "You rarely hand-write them. The cheapest source is your own traffic: the\n"
-        "👍/👎 feedback flywheel from the Production dive turns real answers into\n"
+        "thumbs-up/down feedback loop from the Production dive turns answers into\n"
         "preference pairs (thumbs-up = chosen, a fixed/edited version = rejected, or\n"
         "vice-versa). You can also have a strong model rank two candidates (RLAIF,\n"
         "AI feedback instead of human). Either way the asset is the same: pairs.\n"
