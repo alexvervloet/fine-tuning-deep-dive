@@ -8,7 +8,7 @@ Mistral, Qwen, Gemma, ...) and train it yourself, on your own (or rented) GPU.
 
 This script doesn't train anything; running open weights needs a GPU and a
 different stack (PyTorch + Hugging Face transformers/peft), which is its own deep
-dive. It explains the two ideas you need so the landscape isn't a mystery, and it
+dive. It explains the two ideas you need so the options aren't a mystery, and it
 shows that YOUR DATASET IS THE SAME ASSET either way: the file you built and
 validated in Sections 3-4 is exactly what an open-weight trainer consumes too.
 
