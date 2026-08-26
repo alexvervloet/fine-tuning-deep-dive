@@ -7,7 +7,7 @@ supervised fine-tuning (SFT), and it's perfect when there *is* a single correct
 output: a fixed format, a known label.
 
 But some qualities don't have one right answer. "Be more concise." "Sound warmer."
-"Refuse this kind of request more firmly." You can't write THE correct response 
+"Refuse this kind of request more firmly." You can't write THE correct response,
 but you can reliably say which of two responses is *better*. **Preference tuning**
 learns from exactly that: pairs of (better, worse) answers to the same prompt.
 
