@@ -4,7 +4,7 @@
 # real (paid) OpenAI fine-tune or to use a hosted base/teacher model.
 
 # Loads variables from a .env file (like PROVIDER, OPENAI_API_KEY) into the env.
-python-dotenv>=1.0.0
+python-dotenv>=1.0.0,<2
 
 # --- Provider SDKs (optional; only for the real, non-mock stacks) ---
 # You only need the one matching your PROVIDER (see .env). Both are light.
