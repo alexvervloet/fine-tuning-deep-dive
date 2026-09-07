@@ -33,11 +33,19 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # A preference example isn't (input -> the one right output). It's a prompt plus
 # TWO responses, labeled which is better: here, "warmer and more concise" wins.
+#
+# Write the pair so that ONE thing separates the two responses. DPO widens the
+# margin on whatever actually differs, and it cannot tell which difference you
+# meant. An earlier version of the first pair had the chosen answer say "I've
+# refunded it": warm and concise as intended, but also claiming a completed action
+# the assistant never performed. That pair teaches two lessons at once, and the
+# second one is "assert the refund is done", which is the expensive kind of wrong.
+# Vary the tone. Hold everything else fixed.
 PREFERENCE_PAIRS = [
     {
         "prompt": "A customer writes: 'I was double-charged this month.'",
-        "chosen": "So sorry about that! I see the duplicate charge; I've refunded it, and it'll "
-                  "post in 5-10 days. Anything else I can fix?",
+        "chosen": "So sorry about that! You can request the refund under Billing > History, "
+                  "and it posts in 5-10 days. Anything else I can fix?",
         "rejected": "Per our billing policy, duplicate charges may occur and are reviewed within "
                     "5-10 business days in accordance with the terms of service section 4.2.",
     },
@@ -72,6 +80,18 @@ def main() -> int:
         "DPO's training signal, in one sentence: increase the model's likelihood of\n"
         "the CHOSEN response relative to the REJECTED one for the same prompt, widening\n"
         "the margin, while staying close to the original model so it doesn't drift.\n"
+    )
+
+    print("One axis per pair")
+    print("=" * 64)
+    print(
+        "DPO increases the margin on whatever separates chosen from rejected. It has\n"
+        "no idea which difference you had in mind, so every unintended difference is\n"
+        "also a lesson. Pairs that differ in tone AND in what they claim will teach\n"
+        "the claim as readily as the tone, and a model that learned to say 'I've\n"
+        "refunded it' will say it whether or not a refund happened.\n\n"
+        "Before you accept a pair, read the two responses and name every way they\n"
+        "differ. If the list has more than one item, rewrite until it doesn't.\n"
     )
 
     print("Where the pairs come from")
