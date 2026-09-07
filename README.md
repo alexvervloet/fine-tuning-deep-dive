@@ -39,8 +39,8 @@ predict-then-run prompt for each one.
 
 ## 0. The one big idea
 
-> **Fine-tuning changes how the model behaves, not what it knows. You teach a default
-> behavior with examples, and then you have to prove it beat your baseline.**
+> **Fine-tuning teaches behavior well and facts badly. You teach a default behavior with
+> examples, and then you have to prove it beat your baseline.**
 
 That is the whole repo. RAG and long context change what is in the context window, which
 is knowledge. Fine-tuning changes how the model responds by default, meaning format, tone,
@@ -49,6 +49,16 @@ set is the product, and most of the work is building and validating it. And beca
 feels better" is worth nothing, the step that makes fine-tuning real is the last one.
 Measure the tuned model against the base model on a held-out set, and ship only if it
 wins. Hold onto that and none of this feels complicated.
+
+The honest version of "facts badly" is worth a sentence, because the slogan you will hear
+elsewhere is "fine-tuning can't teach knowledge" and that is not true. Training does write
+into the weights, and enough of it does install knowledge; continued pretraining on a large
+domain corpus is how domain-specific base models get made. What is true is that the few
+thousand examples of a hosted fine-tune are far too little repetition to land facts
+reliably, and that even when a fact does land you cannot cite it, update it, or tell
+whether it is still there. So the rule survives its own correction: use retrieval for
+knowledge, because facts in weights are unreliable, unattributable, and stale the moment
+the world moves, not because training is incapable of storing them.
 
 ---
 
