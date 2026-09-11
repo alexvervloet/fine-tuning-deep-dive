@@ -6,7 +6,7 @@ validate it, run a fine-tune job, and then do the step most people skip: prove t
 fine-tuned model actually beat the base model on data it never saw. No framework magic,
 just enough code to see how each step works.
 
-Here is what makes this repo work. It runs completely offline on a mock provider, with no
+Here's what makes this repo work. It runs completely offline on a mock provider, with no
 API key. Real fine-tuning costs money and takes minutes to hours, which is a terrible way
 to learn the shape of it. So the default `PROVIDER=mock` ships a tiny deterministic
 "model" and a simulated fine-tune lifecycle, upload then job then poll then use, that runs
@@ -15,17 +15,17 @@ in-process in under a second for $0.
 > **The real OpenAI path is closing.** OpenAI is winding down self-serve fine-tuning.
 > Orgs that had never fine-tuned lost the ability to start new jobs on 2026-05-07, orgs
 > with no recent fine-tuned inference on 2026-07-02, and the remainder go on 2027-01-06.
-> Inference on already-tuned models keeps working until the base model retires. If you
-> are new to this, `--real` will return `training_not_available` whatever base model you
+> Inference on already-tuned models keeps working until the base model retires. If you're
+> new to this, `--real` will return `training_not_available` whatever base model you
 > name.
 >
-> That does not make the repo obsolete, and nothing here was removed. The mechanics
+> That doesn't make the repo obsolete, and nothing here was removed. The mechanics
 > transfer: build a dataset, validate it, run the lifecycle, prove the tuned model beat
 > the baseline. The method is identical whether the trainer is OpenAI, a cloud GPU, or
 > MLX on your laptop. What changed is where you run it. Section 9 on distillation and
 > Section 10 on open-weight fine-tuning with LoRA and PEFT are where that now happens.
 
-This repo is standalone and teaches everything it needs on its own. It is the hands-on
+This repo is standalone and teaches everything it needs on its own. It's the hands-on
 version of the [RAG deep dive](https://github.com/alexvervloet/rag-deep-dive)'s "RAG,
 fine-tuning, or something else?" section, and Section 7 borrows the win-rate method from
 the [Evals deep dive](https://github.com/alexvervloet/evals-deep-dive). Its code depends
@@ -42,7 +42,7 @@ predict-then-run prompt for each one.
 > **Fine-tuning teaches behavior well and facts badly. You teach a default behavior with
 > examples, and then you have to prove it beat your baseline.**
 
-That is the whole repo. RAG and long context change what is in the context window, which
+That's the whole repo. RAG and long context change what's in the context window, which
 is knowledge. Fine-tuning changes how the model responds by default, meaning format, tone,
 or one narrow skill, taught only by showing it input and output examples. So the training
 set is the product, and most of the work is building and validating it. And because "it
@@ -50,13 +50,13 @@ feels better" is worth nothing, the step that makes fine-tuning real is the last
 Measure the tuned model against the base model on a held-out set, and ship only if it
 wins. Hold onto that and none of this feels complicated.
 
-The honest version of "facts badly" is worth a sentence, because the slogan you will hear
-elsewhere is "fine-tuning can't teach knowledge" and that is not true. Training does write
+The honest version of "facts badly" is worth a sentence, because the slogan you'll hear
+elsewhere is "fine-tuning can't teach knowledge" and that isn't true. Training does write
 into the weights, and enough of it does install knowledge; continued pretraining on a large
-domain corpus is how domain-specific base models get made. What is true is that the few
+domain corpus is how domain-specific base models get made. What's true is that the few
 thousand examples of a hosted fine-tune are far too little repetition to land facts
-reliably, and that even when a fact does land you cannot cite it, update it, or tell
-whether it is still there. So the rule survives its own correction: use retrieval for
+reliably, and that even when a fact does land you can't cite it, update it, or tell
+whether it's still there. So the rule survives its own correction: use retrieval for
 knowledge, because facts in weights are unreliable, unattributable, and stale the moment
 the world moves, not because training is incapable of storing them.
 
@@ -91,7 +91,7 @@ with no key. Pick a real provider only when you want to run an actual, paid fine
 | `claude` | Chat only. Anthropic fine-tuning is a limited/enterprise program, not self-serve. Usable as a base/teacher model. | `ANTHROPIC_API_KEY` |
 
 > **You can complete every section for $0.** The mock simulates uploading, training,
-> polling, and serving a fine-tuned model. That is now the only way most readers can run
+> polling, and serving a fine-tuned model. That's now the only way most readers can run
 > the lifecycle end to end, which makes it the main path rather than a convenience.
 
 ---
@@ -106,7 +106,7 @@ The most valuable fine-tuning skill is knowing when not to. Fine-tuning is the s
 expensive, provider-specific option, and reaching for it first is the most common and
 costly mistake. One rule resolves most cases.
 
-- **RAG and long context** change what is in the context → reach for them when you need
+- **RAG and long context** change what's in the context → reach for them when you need
   facts that change or must be cited.
 - **Fine-tuning** changes how the model behaves by default → reach for it when you need
   the same format, tone, or skill every time, or lower cost and latency on a fixed,
@@ -216,7 +216,7 @@ decision, base against fine-tuned on the held-out
   gold.
 - **Win-rate.** Pairwise, the way `evals/07_pairwise.py` does it. Show a judge both
   answers and tally which is better. Here the judge is an offline format rubric so it
-  runs free; in production you would use an LLM-as-judge.
+  runs free; in production you'd use an LLM-as-judge.
 
 If the tuned model doesn't beat the baseline, the honest move is to not ship it and go
 back to the dataset.
@@ -255,8 +255,8 @@ Take a big, expensive, smart model, the teacher, that already does your task wel
 over a pile of inputs, and use its answers as training data for a small, cheap, fast
 model, the student. The labels write themselves, which is what makes a set of hundreds or
 thousands of examples cheap to build. The example builds a distillation dataset. On the
-mock, the teacher is the mock in the house format; on a real provider you would point it
-at `gpt-4o` or `claude`. Then it validates the result, proving it is a normal training
+mock, the teacher is the mock in the house format; on a real provider you'd point it
+at `gpt-4o` or `claude`. Then it validates the result, proving it's a normal training
 file you can feed straight into Section 5.
 
 ---
@@ -288,7 +288,7 @@ python examples/10_preference_tuning.py
 
 Every example so far taught by demonstration: show the one right answer and imitate, which
 is SFT. But some goals have no single right answer. "Be warmer", "be more concise", "refuse
-this more firmly". You cannot write the correct reply, and you can say which of two replies
+this more firmly". You can't write the correct reply, and you can say which of two replies
 is better. Preference tuning learns from exactly that, pairs of
 `{prompt, chosen, rejected}`. RLHF trains a reward model from the rankings. DPO, the modern
 shortcut, trains directly on the pairs. This section is conceptual. It shows the data
@@ -303,7 +303,7 @@ discipline is unchanged. Still gate on a held-out eval before shipping.
 SFT learns from demonstrations, meaning one right answer to imitate. Preference tuning
 learns from comparisons, where A is better than B. Reinforcement fine-tuning learns from a
 grader. The model generates an answer, a scoring function rates it, and training pushes
-the model toward higher-scoring answers. There is no labeled target and no pair, just a
+the model toward higher-scoring answers. There's no labeled target and no pair, just a
 way to score an attempt. This section is conceptual with no runnable example, because
 graders are expensive and fiddly and this is the most complex rung here.
 
@@ -311,19 +311,19 @@ The whole game is the grader, a function `score(prompt, answer) -> number`. It c
 hard programmatic check (do the unit tests pass? does the JSON validate against the
 schema? does the math answer match?) or a model-as-judge scoring against a rubric. This is
 the "reinforcement learning from verifiable rewards" that trains modern reasoning models.
-When correctness is checkable but you cannot write down the one right output, a grader
+When correctness is checkable but you can't write down the one right output, a grader
 beats labeled data.
 
 Reach for RFT when success is easy to verify and hard to demonstrate, meaning there are
 many correct programs, proofs, or plans, so you can check one but not enumerate them. Or
 when writing thousands of gold answers or preference pairs costs more than writing one
-scoring function. Or when you are optimizing a multi-step behavior where only the outcome
+scoring function. Or when you're optimizing a multi-step behavior where only the outcome
 is gradeable. Stick with SFT when you can cheaply demonstrate the target, and with
 preference tuning when quality is a matter of taste a judge can rank but not score
 objectively.
 
-There is a catch beyond cost. A model optimizing a score will hack a weak grader, passing
-the letter of the check while missing the point. That is the eval-gaming failure the
+There's a catch beyond cost. A model optimizing a score will hack a weak grader, passing
+the letter of the check while missing the point. That's the eval-gaming failure the
 [Evals dive](https://github.com/alexvervloet/evals-deep-dive) warns about, now inside the
 training loop. So the grader needs the same scrutiny as an eval, and the shipping
 discipline is unchanged. Gate on a held-out set the grader never saw.
@@ -373,7 +373,7 @@ you train anything.
 | It must **act** or fetch **live** data | **Tools / agents** | Capability, not behavior or knowledge |
 | Lower **latency/cost** on a fixed, high-volume task | **Distill + fine-tune a smaller model** | Push known-good behavior into a cheaper model |
 
-Two rules of thumb. Don't fine-tune first. It is the slow, expensive, provider-specific
+Two rules of thumb. Don't fine-tune first. It's the slow, expensive, provider-specific
 option, and a better prompt or RAG solves most of what looks like a training problem. And
 never fine-tune on vibes. The only way to know it helped is to measure it against a
 baseline, as Section 7 does. They also complement each other rather than competing. A
@@ -391,7 +391,7 @@ idea, with more control.
   where A is better than B, as well as on demonstrations, to shape subtler behavior.
 - **Reinforcement fine-tuning (RFT).** Covered conceptually in §12. Train against a
   grader, either a verifiable check or a rubric judge, when success is checkable but not
-  easily demonstrated. That is how reasoning models are trained.
+  easily demonstrated. That's how reasoning models are trained.
 - **Open-weight LoRA in practice.** Actually run Section 10 on a GPU with `transformers`,
   `peft`, and `trl`. Pairs with the Local Models deep dive.
 - **Bigger, cleaner datasets.** The real lever is almost always more and better data
@@ -405,7 +405,7 @@ idea, with more control.
 
 ## From teaching code to production
 
-The teaching shortcuts that make this repo free and fast are exactly what you would
+The teaching shortcuts that make this repo free and fast are exactly what you'd
 replace once a fine-tuned model sits on a live request path.
 
 | This repo's teaching shortcut | In production |
