@@ -1,6 +1,6 @@
 # Exercises: make the learning stick
 
-Reading code teaches you less than *predicting* what it will do and then checking.
+Reading code teaches you less than *predicting* what it'll do and then checking.
 This file turns each section of the [README](README.md) into a few quick
 active-recall prompts.
 
@@ -130,7 +130,7 @@ questions. What concretely changed, and what did *not*?
 
 **Changed:** the tuned model now answers in the rigid `category: ... | reply: ...`
 house format the training demonstrated, reliably, with no reminder in the prompt.
-**Did not change:** its underlying knowledge. Fine-tuning taught a *format/behavior*,
+**Didn't change:** its underlying knowledge. Fine-tuning taught a *format/behavior*,
 not new facts.
 </details>
 
@@ -179,7 +179,7 @@ exact divergence in the simulated loss curve.
 
 ## Section 9: Distillation **(offline)**
 
-**Recall.** In distillation, who is the *teacher*, who is the *student*, and why is
+**Recall.** In distillation, who's the *teacher*, who's the *student*, and why is
 the dataset so cheap to build?
 
 <details><summary>▸ Answer</summary>
@@ -258,14 +258,14 @@ grader needs the same scrutiny as an eval, and you still gate on a held-out set.
 ## Capstone: `finetune_run.py`
 
 **Do.** Run `python hands_on/finetune_run.py`. It chains validate → tune →
-eval-gate → ship-if-wins. What is the gate actually deciding, and what does a
+eval-gate → ship-if-wins. What's the gate actually deciding, and what does a
 *non-zero exit* mean?
 
 <details><summary>▸ Answer</summary>
 
 The gate decides whether the tuned model **provably beat the base model** on the
 held-out set (optionally above a `--min-winrate` you set). A non-zero exit means it
-**did not** clear the bar, the same signal a CI eval gate gives, so a bad fine-tune
+**didn't** clear the bar, the same signal a CI eval gate gives, so a bad fine-tune
 can't silently ship.
 </details>
 
