@@ -218,6 +218,11 @@ decision, base against fine-tuned on the held-out
   answers and tally which is better. Here the judge is an offline format rubric so it
   runs free; in production you'd use an LLM-as-judge.
 
+The baseline is the exact model the tune started from, read out of the fine-tuned id
+(`ft:<base>:...`), not whatever the series' chat default happens to be. A
+`gpt-4o-mini` fine-tune measured against `gpt-6-luna` would mix a model change into the
+tuning effect, and you couldn't tell which one moved the number.
+
 If the tuned model doesn't beat the baseline, the honest move is to not ship it and go
 back to the dataset.
 
