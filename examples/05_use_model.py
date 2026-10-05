@@ -60,8 +60,8 @@ def main() -> int:
     providers.ensure_ready()
     print(f"Provider: {providers.describe()}\n")
 
-    base = providers.base_model()
     tuned = get_finetuned_model()
+    base = providers.base_of(tuned)  # the model this tune started from
     print(f"Base model:       {base}")
     print(f"Fine-tuned model: {tuned}\n")
 
