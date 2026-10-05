@@ -54,8 +54,8 @@ def main() -> int:
     print(f"Provider: {providers.describe()}\n")
 
     held_out = load_jsonl(EVAL)
-    base = providers.base_model()
     tuned = get_finetuned_model()
+    base = providers.base_of(tuned)  # the model this tune started from
     print(f"Held-out eval set: {len(held_out)} examples (none seen in training)\n")
 
     # 1. Accuracy: the headline number.
