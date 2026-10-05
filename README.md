@@ -192,9 +192,8 @@ python examples/05_use_model.py
 Once a job succeeds, the provider hosts your model under a new id, something like
 `ft:gpt-4o-mini-2024-07-18:...`. Using it is a normal chat call with that id and no
 special API. The example asks the base and the fine-tuned model the same questions side
-by side. The base
-handles the one or two categories it happens to know, then rambles and ignores the house
-format on the rest. The tuned model snaps every one into the trained
+by side. The base handles the one or two categories it happens to know, then rambles and
+ignores the house format on the rest. The tuned model snaps every one into the trained
 `category: ... | reply: ...` shape. That behavior change, taught only by examples, is the
 whole idea.
 
