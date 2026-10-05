@@ -42,7 +42,7 @@ from dataclasses import dataclass
 from functools import lru_cache
 
 # Default models per stack. Match the sibling repos' model IDs exactly.
-_OPENAI_CHAT = "gpt-5.4-nano"           # the default chat model (base + teacher)
+_OPENAI_CHAT = "gpt-6-luna"             # the default chat model (base + teacher)
 _CLAUDE_CHAT = "claude-haiku-4-5"
 _MOCK_MODEL = "mock-1"
 
@@ -338,9 +338,18 @@ def generate(system: str, user: str, *, model: str | None = None, max_tokens: in
 
     start = time.perf_counter()
     if p == "openai":
+        # gpt-6-luna reasons by default; "none" turns that off. A fine-tuned id
+        # (ft:gpt-4o-mini-...) rejects the parameter outright, so only send it
+        # to models that take it.
+        reasoning = (
+            {"reasoning_effort": "none"}
+            if model.startswith("gpt-5.") or model in ("gpt-6-luna", "gpt-6-sol")
+            else {}
+        )
         resp = _openai_client().chat.completions.create(
             model=model,
             max_completion_tokens=max_tokens,
+            **reasoning,
             messages=[
                 {"role": "system", "content": system},
                 {"role": "user", "content": user},
