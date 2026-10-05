@@ -87,7 +87,7 @@ def main() -> int:
     write_jsonl(OUT, examples)
     print(f"\nWrote {len(examples)} distilled examples to {os.path.relpath(OUT, ROOT)}")
 
-    report = validate_dataset(examples, model=providers.base_model())
+    report = validate_dataset(examples, model=providers.tunable_model())
     print("\nValidating the distilled set (it's a normal training file now):")
     print("  " + report.summary().replace("\n", "\n  "))
 
