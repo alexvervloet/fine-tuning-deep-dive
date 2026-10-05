@@ -2,8 +2,8 @@
 Example 05: using the fine-tuned model. OFFLINE on the mock.
 
 Once a job succeeds, the provider hosts your model under a new id (e.g.
-'ft:gpt-5.4-nano:...'). Using it is just a normal chat call with that id as the
-model, with no special API. This script tunes on the mock (fast and free), then asks
+'ft:gpt-4o-mini-2024-07-18:...'). Using it is just a normal chat call with that
+id as the model, with no special API. This script tunes on the mock (fast and free), then asks
 both the BASE model and the FINE-TUNED model the same questions, side by side, so
 you can SEE the behavior change.
 
