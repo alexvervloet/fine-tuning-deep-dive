@@ -145,11 +145,24 @@ def can_tune() -> bool:
 
 
 def base_model() -> str:
-    """The base (un-tuned) model id for the active stack, what you fine-tune
-    *from* and compare *against*."""
+    """The default chat model for the active stack: what generate() uses and the
+    distillation teacher. Not necessarily what you can fine-tune; on openai it's
+    gpt-6-luna, and only the gpt-4o line was ever tunable (see tunable_model)."""
     return {"mock": _MOCK_MODEL, "openai": _OPENAI_CHAT, "claude": _CLAUDE_CHAT}.get(
         provider_name(), _MOCK_MODEL
     )
+
+
+def base_of(fine_tuned_model: str) -> str:
+    """The model a fine-tune was trained from, which is what to compare it against.
+
+    OpenAI-style ids carry it: ft:<base>:<org>:<suffix>:<id>. Comparing a tune
+    against the chat default instead mixes a model change into the tuning effect:
+    a gpt-4o-mini fine-tune measured against gpt-6-luna tells you nothing about
+    what the tuning did."""
+    if fine_tuned_model.startswith("ft:"):
+        return fine_tuned_model.split(":")[1]
+    return base_model()
 
 
 def tunable_model() -> str:

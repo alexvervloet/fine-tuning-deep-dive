@@ -36,6 +36,7 @@ from .dataset import (
 from .evaluate import EvalResult, accuracy_on, win_rate
 from .providers import (
     base_model,
+    base_of,
     can_tune,
     describe,
     ensure_ready,
@@ -60,6 +61,7 @@ __all__ = [
     "describe",
     "ensure_ready",
     "base_model",
+    "base_of",
     "can_tune",
     # dataset
     "ChatExample",
