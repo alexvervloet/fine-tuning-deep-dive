@@ -475,7 +475,7 @@ Run `python check_setup.py` first; it catches most problems. Then, by symptom:
 | Validation reports duplicates / imbalance | That's the check doing its job. Fix the dataset before training; that's far cheaper than a wasted run. |
 | The tuned model didn't beat the baseline | The honest outcome sometimes. Don't ship it; improve the dataset (more, cleaner, better-balanced examples) and re-measure. |
 | `ModuleNotFoundError` (openai / anthropic) | Only needed for real providers. On the default mock stack you need only `python-dotenv`. |
-| `SyntaxError` / odd type errors on startup | You're likely on Python 3.9 or older; this repo needs 3.10+. `check_setup.py` confirms your version. |
+| `SyntaxError` / odd type errors on startup | You're likely on Python 3.10 or older; this repo needs 3.11+. `check_setup.py` confirms your version. |
 
 Still stuck? Every file is small and self-contained. Open it, read the docstring
 at the top, and run it. [finetune/mock_tuner.py](finetune/mock_tuner.py) is the
